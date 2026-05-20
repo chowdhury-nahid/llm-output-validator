@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "name": "eu_vat_de_standard",
+    "pattern_tag": "full_pass",
+    "created": "2024-01-15",
+    "reference_date": "2024-06-01"
+  },
+  "input": {
+    "response": {
+      "response": {
+        "jurisdiction": "DE",
+        "rate": 0.19,
+        "effective_date": "2023-01-01",
+        "source_id": "EU-VAT-DIR-2006-112",
+        "confidence": "high"
+      },
+      "citations": [
+        {"document_id": "EU-VAT-DIR-2006-112"},
+        {"document_id": "BMWK-2023-VAT"}
+      ],
+      "regulatory_claims": [
+        {"jurisdiction": "DE", "claim_text": "German standard VAT rate is 19% under EU VAT Directive."}
+      ],
+      "raw_prompt": "What is the standard VAT rate in Germany for 2023?"
+    },
+    "corpus_docs": {
+      "EU-VAT-DIR-2006-112": 1.0,
+      "BMWK-2023-VAT": 0.85
+    },
+    "range_table": {
+      "DE": {"lo": 0.19, "hi": 0.19}
+    }
+  },
+  "expected": {
+    "status": "pass",
+    "checks": [
+      {"pattern_id": 1, "check_name": "schema_validation", "status": "pass"},
+      {"pattern_id": 2, "check_name": "citation_grounding", "status": "pass"},
+      {"pattern_id": 3, "check_name": "numeric_boundary", "status": "pass"},
+      {"pattern_id": 4, "check_name": "temporal_consistency", "status": "pass"},
+      {"pattern_id": 5, "check_name": "jurisdictional_scoping", "status": "pass"},
+      {"pattern_id": 6, "check_name": "confidence_calibration", "status": "pass"},
+      {"pattern_id": 7, "check_name": "prompt_injection_resilience", "status": "pass"}
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "name": "us_ca_standard_rate",
+    "pattern_tag": "full_pass",
+    "created": "2024-01-15",
+    "reference_date": "2024-06-01"
+  },
+  "input": {
+    "response": {
+      "response": {
+        "jurisdiction": "US-CA",
+        "rate": 0.0925,
+        "effective_date": "2023-07-01",
+        "source_id": "IRS-2023-001",
+        "confidence": "high"
+      },
+      "citations": [
+        {"document_id": "IRS-2023-001"},
+        {"document_id": "CA-FTB-2023-TAX"},
+        {"document_id": "USC-TITLE26-SEC11"}
+      ],
+      "regulatory_claims": [
+        {"jurisdiction": "US-CA", "claim_text": "California state income tax applies."}
+      ],
+      "raw_prompt": "What is the California state tax rate for 2023?"
+    },
+    "corpus_docs": {
+      "IRS-2023-001": 1.0,
+      "CA-FTB-2023-TAX": 0.9,
+      "USC-TITLE26-SEC11": 1.0
+    },
+    "range_table": {
+      "US-CA": {"lo": 0.07, "hi": 0.145}
+    }
+  },
+  "expected": {
+    "status": "pass",
+    "checks": [
+      {"pattern_id": 1, "check_name": "schema_validation", "status": "pass"},
+      {"pattern_id": 2, "check_name": "citation_grounding", "status": "pass"},
+      {"pattern_id": 3, "check_name": "numeric_boundary", "status": "pass"},
+      {"pattern_id": 4, "check_name": "temporal_consistency", "status": "pass"},
+      {"pattern_id": 5, "check_name": "jurisdictional_scoping", "status": "pass"},
+      {"pattern_id": 6, "check_name": "confidence_calibration", "status": "pass"},
+      {"pattern_id": 7, "check_name": "prompt_injection_resilience", "status": "pass"}
+    ]
+  }
+}

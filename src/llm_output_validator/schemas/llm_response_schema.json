@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:llm-output-validator:llm-response",
+  "type": "object",
+  "required": ["response"],
+  "properties": {
+    "response": {
+      "type": "object",
+      "required": ["jurisdiction", "rate", "effective_date", "source_id", "confidence"],
+      "properties": {
+        "jurisdiction": {"type": "string", "minLength": 2, "maxLength": 10},
+        "rate": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "effective_date": {"type": "string"},
+        "source_id": {"type": "string", "minLength": 1},
+        "confidence": {"type": "string", "enum": ["high", "medium", "low"]}
+      },
+      "additionalProperties": false
+    },
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["document_id"],
+        "properties": {
+          "document_id": {"type": "string", "minLength": 1},
+          "page": {"type": ["integer", "null"], "minimum": 1},
+          "excerpt": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "regulatory_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["jurisdiction", "claim_text"],
+        "properties": {
+          "jurisdiction": {"type": "string", "minLength": 2, "maxLength": 10},
+          "claim_text": {"type": "string"},
+          "effective_from": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "raw_prompt": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}
