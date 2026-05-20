@@ -11,10 +11,16 @@ def main() -> None:
         prog="llm-validate",
         description="Validate an LLM response JSON against the verification layer contracts",
     )
-    parser.add_argument("input", help="Path to JSON file containing the LLM response (use - for stdin)")
+    parser.add_argument(
+        "input", help="Path to JSON file containing the LLM response (use - for stdin)"
+    )
     parser.add_argument("--corpus", required=True, help="Path to corpus JSON file")
-    parser.add_argument("--range-table", required=True, dest="range_table", help="Path to range table JSON file")
-    parser.add_argument("--golden-dir", dest="golden_dir", help="Directory of golden fixture JSON files")
+    parser.add_argument(
+        "--range-table", required=True, dest="range_table", help="Path to range table JSON file"
+    )
+    parser.add_argument(
+        "--golden-dir", dest="golden_dir", help="Directory of golden fixture JSON files"
+    )
     parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format")
     args = parser.parse_args()
 
@@ -23,8 +29,8 @@ def main() -> None:
     else:
         raw = json.loads(Path(args.input).read_text())
 
-    from .validator import OutputValidator
     from .exporters import JsonReportExporter, TextReportExporter
+    from .validator import OutputValidator
 
     validator = OutputValidator.build_default(
         corpus_path=Path(args.corpus),

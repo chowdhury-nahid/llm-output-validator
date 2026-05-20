@@ -1,7 +1,5 @@
 from datetime import date
 
-import pytest
-
 from llm_output_validator import Citation, DocumentCorpus, LLMResponse, TaxRateResponse
 from llm_output_validator.report import CheckStatus
 
@@ -27,10 +25,12 @@ def test_all_citations_grounded_passes(validator, valid_response):
 
 
 def test_missing_citation_fails(validator):
-    response = _make_response([
-        Citation(document_id="IRS-2023-001"),
-        Citation(document_id="HALLUCINATED-DOC-999"),
-    ])
+    response = _make_response(
+        [
+            Citation(document_id="IRS-2023-001"),
+            Citation(document_id="HALLUCINATED-DOC-999"),
+        ]
+    )
     report = validator.validate(response)
     check = next(c for c in report.checks if c.check_name == "citation_grounding")
     assert check.status == CheckStatus.FAIL
@@ -38,10 +38,12 @@ def test_missing_citation_fails(validator):
 
 
 def test_all_missing_citations_fail(validator):
-    response = _make_response([
-        Citation(document_id="FAKE-1"),
-        Citation(document_id="FAKE-2"),
-    ])
+    response = _make_response(
+        [
+            Citation(document_id="FAKE-1"),
+            Citation(document_id="FAKE-2"),
+        ]
+    )
     report = validator.validate(response)
     check = next(c for c in report.checks if c.check_name == "citation_grounding")
     assert check.status == CheckStatus.FAIL
@@ -56,6 +58,7 @@ def test_empty_citations_list_fails(validator):
 
 def test_low_authority_score_warns(base_range_table):
     from llm_output_validator import OutputValidator
+
     low_corpus = DocumentCorpus.from_dict({"COMMENTARY-2023": 0.2})
     validator = OutputValidator(
         corpus=low_corpus,
@@ -80,6 +83,7 @@ def test_authority_score_calculation():
 
 def test_authority_threshold_configurable(base_range_table):
     from llm_output_validator import OutputValidator
+
     low_corpus = DocumentCorpus.from_dict({"COMMENTARY-2023": 0.2})
     validator = OutputValidator(
         corpus=low_corpus,

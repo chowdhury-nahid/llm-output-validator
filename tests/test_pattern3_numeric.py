@@ -1,7 +1,5 @@
 from datetime import date
 
-import pytest
-
 from llm_output_validator import Citation, LLMResponse, TaxRateResponse
 from llm_output_validator.report import CheckStatus
 
@@ -15,7 +13,11 @@ def _make_response(jurisdiction: str, rate: float) -> LLMResponse:
             source_id="IRS-2023-001",
             confidence="medium",
         ),
-        citations=[Citation(document_id="IRS-2023-001"), Citation(document_id="CA-FTB-2023-TAX"), Citation(document_id="USC-TITLE26-SEC11")],
+        citations=[
+            Citation(document_id="IRS-2023-001"),
+            Citation(document_id="CA-FTB-2023-TAX"),
+            Citation(document_id="USC-TITLE26-SEC11"),
+        ],
         raw_prompt="test",
     )
 

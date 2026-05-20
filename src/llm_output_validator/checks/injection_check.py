@@ -45,12 +45,14 @@ class PromptInjectionCheck(BaseCheck):
             for pattern in self.patterns:
                 m = pattern.search(text)
                 if m:
-                    snippet = text[max(0, m.start() - 20): m.end() + 20]
-                    matches.append({
-                        "field": field_name,
-                        "pattern": pattern.pattern,
-                        "snippet": repr(snippet),
-                    })
+                    snippet = text[max(0, m.start() - 20) : m.end() + 20]
+                    matches.append(
+                        {
+                            "field": field_name,
+                            "pattern": pattern.pattern,
+                            "snippet": repr(snippet),
+                        }
+                    )
 
         if matches:
             return CheckResult(

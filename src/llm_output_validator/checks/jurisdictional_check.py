@@ -17,9 +17,7 @@ class JurisdictionalScopingCheck(BaseCheck):
         allowed = self.related_jurisdictions.get(primary, {primary})
 
         out_of_scope = [
-            rc.jurisdiction
-            for rc in response.regulatory_claims
-            if rc.jurisdiction not in allowed
+            rc.jurisdiction for rc in response.regulatory_claims if rc.jurisdiction not in allowed
         ]
 
         if out_of_scope:
@@ -29,7 +27,11 @@ class JurisdictionalScopingCheck(BaseCheck):
                 status=CheckStatus.FAIL,
                 severity="error",
                 message=f"Out-of-scope regulatory claims for {primary}: {', '.join(out_of_scope)}",
-                detail={"primary_jurisdiction": primary, "allowed": list(allowed), "out_of_scope": out_of_scope},
+                detail={
+                    "primary_jurisdiction": primary,
+                    "allowed": list(allowed),
+                    "out_of_scope": out_of_scope,
+                },
             )
 
         return CheckResult(

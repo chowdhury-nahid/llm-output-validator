@@ -26,19 +26,34 @@ class TemporalConsistencyCheck(BaseCheck):
                 check_name=self.check_name,
                 status=CheckStatus.FAIL,
                 severity="error",
-                message=f"Response cites future effective date {effective_date} (reference: {today})",
-                detail={"effective_date": str(effective_date), "reference_date": str(today), "jurisdiction": jurisdiction, "superseded": False},
+                message=f"Response cites future effective date {effective_date} (ref: {today})",
+                detail={
+                    "effective_date": str(effective_date),
+                    "reference_date": str(today),
+                    "jurisdiction": jurisdiction,
+                    "superseded": False,
+                },
             )
 
-        superseded = range_table.has_superseding_rule(jurisdiction, after=effective_date, before=today)
+        superseded = range_table.has_superseding_rule(
+            jurisdiction, after=effective_date, before=today
+        )
         if superseded:
             return CheckResult(
                 pattern_id=self.pattern_id,
                 check_name=self.check_name,
                 status=CheckStatus.FAIL,
                 severity="error",
-                message=f"A more recent rule exists for {jurisdiction} between {effective_date} and {today}",
-                detail={"effective_date": str(effective_date), "reference_date": str(today), "jurisdiction": jurisdiction, "superseded": True},
+                message=(
+                    f"A more recent rule exists for {jurisdiction} "
+                    f"between {effective_date} and {today}"
+                ),
+                detail={
+                    "effective_date": str(effective_date),
+                    "reference_date": str(today),
+                    "jurisdiction": jurisdiction,
+                    "superseded": True,
+                },
             )
 
         return CheckResult(
@@ -46,6 +61,11 @@ class TemporalConsistencyCheck(BaseCheck):
             check_name=self.check_name,
             status=CheckStatus.PASS,
             severity="info",
-            message=f"Temporal consistency verified for {jurisdiction} (effective: {effective_date})",
-            detail={"effective_date": str(effective_date), "reference_date": str(today), "jurisdiction": jurisdiction, "superseded": False},
+            message=f"Temporal consistency verified for {jurisdiction} (eff: {effective_date})",
+            detail={
+                "effective_date": str(effective_date),
+                "reference_date": str(today),
+                "jurisdiction": jurisdiction,
+                "superseded": False,
+            },
         )

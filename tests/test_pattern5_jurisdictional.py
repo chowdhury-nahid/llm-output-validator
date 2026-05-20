@@ -1,8 +1,12 @@
 from datetime import date
 
-import pytest
-
-from llm_output_validator import Citation, LLMResponse, OutputValidator, RegulatoryCllaim, TaxRateResponse
+from llm_output_validator import (
+    Citation,
+    LLMResponse,
+    OutputValidator,
+    RegulatoryCllaim,
+    TaxRateResponse,
+)
 from llm_output_validator.report import CheckStatus
 
 
@@ -15,7 +19,11 @@ def _make_response(primary: str, claim_jurisdictions: list[str]) -> LLMResponse:
             source_id="IRS-2023-001",
             confidence="medium",
         ),
-        citations=[Citation(document_id="IRS-2023-001"), Citation(document_id="CA-FTB-2023-TAX"), Citation(document_id="USC-TITLE26-SEC11")],
+        citations=[
+            Citation(document_id="IRS-2023-001"),
+            Citation(document_id="CA-FTB-2023-TAX"),
+            Citation(document_id="USC-TITLE26-SEC11"),
+        ],
         regulatory_claims=[
             RegulatoryCllaim(jurisdiction=j, claim_text=f"Claim for {j}")
             for j in claim_jurisdictions

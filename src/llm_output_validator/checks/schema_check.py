@@ -27,9 +27,7 @@ class SchemaValidationCheck(BaseCheck):
         errors: list[str] = []
 
         if response.response.effective_date > today:
-            errors.append(
-                f"effective_date {response.response.effective_date} is in the future"
-            )
+            errors.append(f"effective_date {response.response.effective_date} is in the future")
 
         if not errors:
             return CheckResult(

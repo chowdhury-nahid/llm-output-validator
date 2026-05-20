@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from llm_output_validator import Citation, DocumentCorpus, LLMResponse, OutputValidator, RangeTable, TaxRateResponse
+from llm_output_validator import Citation, LLMResponse, OutputValidator, TaxRateResponse
 from llm_output_validator.checks.golden_check import GoldenFixture, GoldenRegressionCheck
 from llm_output_validator.report import CheckStatus
 
@@ -30,9 +30,12 @@ def test_bundled_fixtures_pass(fixture_path):
         reference_date=fixture.reference_date,
     )
     report = sub_validator.validate(fixture.input_response)
+    check_summary = "\n".join(
+        f"  {c.check_name}: {c.status.value} — {c.message}" for c in report.checks
+    )
     assert report.status.value == fixture.expected_status, (
-        f"Fixture '{fixture.name}' expected status={fixture.expected_status}, got={report.status.value}\n"
-        + "\n".join(f"  {c.check_name}: {c.status.value} — {c.message}" for c in report.checks)
+        f"Fixture '{fixture.name}' expected status={fixture.expected_status},"
+        f" got={report.status.value}\n{check_summary}"
     )
 
 
@@ -46,7 +49,11 @@ def test_golden_check_detects_drift(base_corpus, base_range_table):
             source_id="IRS-2023-001",
             confidence="high",
         ),
-        citations=[Citation(document_id="IRS-2023-001"), Citation(document_id="CA-FTB-2023-TAX"), Citation(document_id="USC-TITLE26-SEC11")],
+        citations=[
+            Citation(document_id="IRS-2023-001"),
+            Citation(document_id="CA-FTB-2023-TAX"),
+            Citation(document_id="USC-TITLE26-SEC11"),
+        ],
         raw_prompt="test",
     )
     fixture = GoldenFixture(
@@ -71,12 +78,6 @@ def test_golden_check_does_not_recurse(base_corpus, base_range_table):
     golden_check = GoldenRegressionCheck(fixtures=fixtures)
 
     # Run the check — if it recurses into itself, it would hang or fail
-    validator = OutputValidator(
-        corpus=base_corpus,
-        range_table=base_range_table,
-        include_golden_check=False,
-        reference_date=date(2024, 6, 1),
-    )
     response = fixtures[0].input_response
     result = golden_check.run(response)
     # Should complete without error

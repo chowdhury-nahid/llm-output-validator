@@ -1,8 +1,12 @@
 from datetime import date
 
-import pytest
-
-from llm_output_validator import Citation, DocumentCorpus, LLMResponse, OutputValidator, TaxRateResponse
+from llm_output_validator import (
+    Citation,
+    DocumentCorpus,
+    LLMResponse,
+    OutputValidator,
+    TaxRateResponse,
+)
 from llm_output_validator.checks.confidence_check import THRESHOLDS
 from llm_output_validator.report import CheckStatus
 
@@ -23,11 +27,14 @@ def _make_response(confidence: str, citations: list[Citation]) -> LLMResponse:
 
 def test_high_confidence_with_strong_evidence_passes(validator):
     report = validator.validate(
-        _make_response("high", [
-            Citation(document_id="IRS-2023-001"),
-            Citation(document_id="CA-FTB-2023-TAX"),
-            Citation(document_id="USC-TITLE26-SEC11"),
-        ])
+        _make_response(
+            "high",
+            [
+                Citation(document_id="IRS-2023-001"),
+                Citation(document_id="CA-FTB-2023-TAX"),
+                Citation(document_id="USC-TITLE26-SEC11"),
+            ],
+        )
     )
     check = next(c for c in report.checks if c.check_name == "confidence_calibration")
     assert check.status == CheckStatus.PASS
@@ -41,9 +48,7 @@ def test_high_confidence_with_single_low_authority_warns(base_range_table):
         include_golden_check=False,
         reference_date=date(2024, 1, 1),
     )
-    report = validator.validate(
-        _make_response("high", [Citation(document_id="COMMENTARY-2023")])
-    )
+    report = validator.validate(_make_response("high", [Citation(document_id="COMMENTARY-2023")]))
     check = next(c for c in report.checks if c.check_name == "confidence_calibration")
     assert check.status == CheckStatus.WARN
     assert check.severity == "warning"
@@ -57,9 +62,7 @@ def test_calibration_is_warning_not_fail(base_range_table):
         include_golden_check=False,
         reference_date=date(2024, 1, 1),
     )
-    report = validator.validate(
-        _make_response("high", [Citation(document_id="COMMENTARY-2023")])
-    )
+    report = validator.validate(_make_response("high", [Citation(document_id="COMMENTARY-2023")]))
     check = next(c for c in report.checks if c.check_name == "confidence_calibration")
     assert check.status != CheckStatus.FAIL
 
@@ -71,9 +74,7 @@ def test_medium_confidence_with_one_grounded_citation_passes(base_corpus, base_r
         include_golden_check=False,
         reference_date=date(2024, 1, 1),
     )
-    report = validator.validate(
-        _make_response("medium", [Citation(document_id="IRS-2023-001")])
-    )
+    report = validator.validate(_make_response("medium", [Citation(document_id="IRS-2023-001")]))
     check = next(c for c in report.checks if c.check_name == "confidence_calibration")
     assert check.status == CheckStatus.PASS
 

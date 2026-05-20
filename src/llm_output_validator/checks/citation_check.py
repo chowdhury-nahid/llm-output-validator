@@ -23,7 +23,11 @@ class CitationGroundingCheck(BaseCheck):
                 status=CheckStatus.FAIL,
                 severity="error",
                 message="No citations provided; response is ungrounded",
-                detail={"missing_doc_ids": [], "authority_score": 0.0, "threshold": self.authority_threshold},
+                detail={
+                    "missing_doc_ids": [],
+                    "authority_score": 0.0,
+                    "threshold": self.authority_threshold,
+                },
             )
 
         missing = corpus.missing_citations(response.citations)
@@ -36,7 +40,11 @@ class CitationGroundingCheck(BaseCheck):
                 status=CheckStatus.FAIL,
                 severity="error",
                 message=f"Hallucinated citation(s): {', '.join(missing)}",
-                detail={"missing_doc_ids": missing, "authority_score": authority, "threshold": self.authority_threshold},
+                detail={
+                    "missing_doc_ids": missing,
+                    "authority_score": authority,
+                    "threshold": self.authority_threshold,
+                },
             )
 
         if authority < self.authority_threshold:
@@ -45,8 +53,15 @@ class CitationGroundingCheck(BaseCheck):
                 check_name=self.check_name,
                 status=CheckStatus.WARN,
                 severity="warning",
-                message=f"All citations grounded but authority score {authority:.2f} below threshold {self.authority_threshold}",
-                detail={"missing_doc_ids": [], "authority_score": authority, "threshold": self.authority_threshold},
+                message=(
+                    f"All citations grounded but authority score {authority:.2f} "
+                    f"below threshold {self.authority_threshold}"
+                ),
+                detail={
+                    "missing_doc_ids": [],
+                    "authority_score": authority,
+                    "threshold": self.authority_threshold,
+                },
             )
 
         return CheckResult(
@@ -55,5 +70,9 @@ class CitationGroundingCheck(BaseCheck):
             status=CheckStatus.PASS,
             severity="info",
             message=f"All citations grounded (authority={authority:.2f})",
-            detail={"missing_doc_ids": [], "authority_score": authority, "threshold": self.authority_threshold},
+            detail={
+                "missing_doc_ids": [],
+                "authority_score": authority,
+                "threshold": self.authority_threshold,
+            },
         )

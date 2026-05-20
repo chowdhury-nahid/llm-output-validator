@@ -30,5 +30,7 @@ class TextReportExporter:
         ]
         for c in report.checks:
             symbol = _STATUS_SYMBOL.get(c.status, "?")
-            lines.append(f"{c.pattern_id:<4} {c.check_name:<30} {symbol} {c.status.value:<6}  {c.message}")
+            lines.append(
+                f"{c.pattern_id:<4} {c.check_name:<30} {symbol} {c.status.value:<6}  {c.message}"
+            )
         return "\n".join(lines)

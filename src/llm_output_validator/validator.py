@@ -131,7 +131,9 @@ class OutputValidator:
         golden_fixtures: list[GoldenFixture] | None = None
         if golden_dir:
             golden_fixtures = GoldenFixture.load_fixtures_from_dir(golden_dir)
-        return cls(corpus=corpus, range_table=range_table, golden_fixtures=golden_fixtures, **kwargs)
+        return cls(
+            corpus=corpus, range_table=range_table, golden_fixtures=golden_fixtures, **kwargs
+        )
 
 
 def _compute_status(checks: list[CheckResult]) -> ReportStatus:

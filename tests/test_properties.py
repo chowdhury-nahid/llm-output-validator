@@ -1,7 +1,7 @@
 """Property-based tests using Hypothesis to fuzz the verification layer."""
+
 from datetime import date
 
-import pytest
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 

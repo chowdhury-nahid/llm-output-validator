@@ -6,9 +6,9 @@ from ..report import CheckResult, CheckStatus
 from . import BaseCheck
 
 THRESHOLDS: dict[str, dict[str, float | int]] = {
-    "high":   {"min_citations": 2, "min_authority": 0.7},
+    "high": {"min_citations": 2, "min_authority": 0.7},
     "medium": {"min_citations": 1, "min_authority": 0.4},
-    "low":    {"min_citations": 0, "min_authority": 0.0},
+    "low": {"min_citations": 0, "min_authority": 0.0},
 }
 
 
@@ -35,7 +35,9 @@ class ConfidenceCalibrationCheck(BaseCheck):
         if citation_count < required["min_citations"]:
             reasons.append(f"needs {required['min_citations']} citation(s), got {citation_count}")
         if authority < required["min_authority"]:
-            reasons.append(f"authority score {authority:.2f} below required {required['min_authority']}")
+            reasons.append(
+                f"authority score {authority:.2f} below required {required['min_authority']}"
+            )
 
         if reasons:
             return CheckResult(

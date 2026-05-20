@@ -15,27 +15,32 @@ from llm_output_validator import (
 
 @pytest.fixture
 def base_corpus() -> DocumentCorpus:
-    return DocumentCorpus.from_dict({
-        "IRS-2023-001": 1.0,
-        "CA-FTB-2023-TAX": 0.9,
-        "USC-TITLE26-SEC11": 1.0,
-        "COMMENTARY-2023": 0.3,
-    })
+    return DocumentCorpus.from_dict(
+        {
+            "IRS-2023-001": 1.0,
+            "CA-FTB-2023-TAX": 0.9,
+            "USC-TITLE26-SEC11": 1.0,
+            "COMMENTARY-2023": 0.3,
+        }
+    )
 
 
 @pytest.fixture
 def base_range_table() -> RangeTable:
-    return RangeTable.from_dict({
-        "US-CA": {"lo": 0.07, "hi": 0.145},
-        "US-NY": {"lo": 0.06, "hi": 0.109},
-        "US-TX": {"lo": 0.0,  "hi": 0.0},
-        "DE":    {"lo": 0.19, "hi": 0.19},
-        "US-CA-OLD": {
-            "lo": 0.06, "hi": 0.12,
-            "superseded_after": "2023-01-01",
-            "superseded_by": "US-CA",
-        },
-    })
+    return RangeTable.from_dict(
+        {
+            "US-CA": {"lo": 0.07, "hi": 0.145},
+            "US-NY": {"lo": 0.06, "hi": 0.109},
+            "US-TX": {"lo": 0.0, "hi": 0.0},
+            "DE": {"lo": 0.19, "hi": 0.19},
+            "US-CA-OLD": {
+                "lo": 0.06,
+                "hi": 0.12,
+                "superseded_after": "2023-01-01",
+                "superseded_by": "US-CA",
+            },
+        }
+    )
 
 
 @pytest.fixture
@@ -54,7 +59,9 @@ def valid_response() -> LLMResponse:
             Citation(document_id="USC-TITLE26-SEC11"),
         ],
         regulatory_claims=[
-            RegulatoryCllaim(jurisdiction="US-CA", claim_text="California state income tax applies."),
+            RegulatoryCllaim(
+                jurisdiction="US-CA", claim_text="California state income tax applies."
+            ),
         ],
         raw_prompt="What is the tax rate for California in 2023?",
     )

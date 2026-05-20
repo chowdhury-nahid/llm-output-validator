@@ -23,7 +23,7 @@ class NumericBoundaryCheck(BaseCheck):
                 check_name=self.check_name,
                 status=CheckStatus.WARN,
                 severity="warning",
-                message=f"Jurisdiction '{jurisdiction}' not in reference range table; cannot validate rate",
+                message=f"Jurisdiction '{jurisdiction}' not in reference range table",
                 detail={"jurisdiction": jurisdiction, "rate": rate},
             )
 
@@ -34,7 +34,12 @@ class NumericBoundaryCheck(BaseCheck):
                 status=CheckStatus.FAIL,
                 severity="error",
                 message=f"Rate {rate} for {jurisdiction} outside reference range [{lo}, {hi}]",
-                detail={"jurisdiction": jurisdiction, "rate": rate, "allowed_lo": lo, "allowed_hi": hi},
+                detail={
+                    "jurisdiction": jurisdiction,
+                    "rate": rate,
+                    "allowed_lo": lo,
+                    "allowed_hi": hi,
+                },
             )
 
         return CheckResult(

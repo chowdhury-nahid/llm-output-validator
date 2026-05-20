@@ -1,7 +1,5 @@
 from datetime import date
 
-import pytest
-
 from llm_output_validator import Citation, LLMResponse, OutputValidator, TaxRateResponse
 from llm_output_validator.report import CheckStatus
 
@@ -15,7 +13,11 @@ def _make_response(jurisdiction: str, effective_date: date) -> LLMResponse:
             source_id="IRS-2023-001",
             confidence="medium",
         ),
-        citations=[Citation(document_id="IRS-2023-001"), Citation(document_id="CA-FTB-2023-TAX"), Citation(document_id="USC-TITLE26-SEC11")],
+        citations=[
+            Citation(document_id="IRS-2023-001"),
+            Citation(document_id="CA-FTB-2023-TAX"),
+            Citation(document_id="USC-TITLE26-SEC11"),
+        ],
         raw_prompt="test",
     )
 
@@ -64,8 +66,18 @@ def test_effective_date_after_supersession_passes(base_corpus, base_range_table)
 
 
 def test_reference_date_injectable(base_corpus, base_range_table):
-    v1 = OutputValidator(corpus=base_corpus, range_table=base_range_table, include_golden_check=False, reference_date=date(2022, 1, 1))
-    v2 = OutputValidator(corpus=base_corpus, range_table=base_range_table, include_golden_check=False, reference_date=date(2024, 1, 1))
+    v1 = OutputValidator(
+        corpus=base_corpus,
+        range_table=base_range_table,
+        include_golden_check=False,
+        reference_date=date(2022, 1, 1),
+    )
+    v2 = OutputValidator(
+        corpus=base_corpus,
+        range_table=base_range_table,
+        include_golden_check=False,
+        reference_date=date(2024, 1, 1),
+    )
     response = _make_response("US-CA-OLD", date(2021, 1, 1))
 
     r1 = v1.validate(response)

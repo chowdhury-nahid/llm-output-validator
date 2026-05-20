@@ -36,17 +36,19 @@ class GoldenFixture:
             corpus = DocumentCorpus.from_dict(inp.get("corpus_docs", {}))
             range_table = RangeTable.from_dict(inp.get("range_table", {}))
 
-            fixtures.append(GoldenFixture(
-                name=meta["name"],
-                pattern_tag=meta["pattern_tag"],
-                created=date.fromisoformat(meta["created"]),
-                reference_date=date.fromisoformat(meta.get("reference_date", meta["created"])),
-                input_response=response,
-                input_corpus=corpus,
-                input_range_table=range_table,
-                expected_status=raw["expected"]["status"],
-                expected_checks=raw["expected"]["checks"],
-            ))
+            fixtures.append(
+                GoldenFixture(
+                    name=meta["name"],
+                    pattern_tag=meta["pattern_tag"],
+                    created=date.fromisoformat(meta["created"]),
+                    reference_date=date.fromisoformat(meta.get("reference_date", meta["created"])),
+                    input_response=response,
+                    input_corpus=corpus,
+                    input_range_table=range_table,
+                    expected_status=raw["expected"]["status"],
+                    expected_checks=raw["expected"]["checks"],
+                )
+            )
         return fixtures
 
 
@@ -74,7 +76,8 @@ class GoldenRegressionCheck(BaseCheck):
 
             if report.status.value != fixture.expected_status:
                 drifted.append(
-                    f"{fixture.name}: expected status={fixture.expected_status}, got={report.status.value}"
+                    f"{fixture.name}: expected status={fixture.expected_status},"
+                    f" got={report.status.value}"
                 )
                 continue
 
@@ -84,7 +87,10 @@ class GoldenRegressionCheck(BaseCheck):
                     None,
                 )
                 if actual is None:
-                    drifted.append(f"{fixture.name}: check '{expected_check['check_name']}' missing from report")
+                    drifted.append(
+                        f"{fixture.name}: check "
+                        f"'{expected_check['check_name']}' missing from report"
+                    )
                 elif actual.status.value != expected_check["status"]:
                     drifted.append(
                         f"{fixture.name}/{expected_check['check_name']}: "
