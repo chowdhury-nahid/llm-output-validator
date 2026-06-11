@@ -203,3 +203,12 @@ tests/
 ## Architecture
 
 The design rationale, full pattern descriptions, and discussion of failure modes are in [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+---
+
+## Regulatory context
+
+Deterministic verification has a specific role under the EU AI Act: it is compliance
+infrastructure, not a regulated AI system. How this library maps to the Act's human
+oversight, robustness, and record-keeping requirements is discussed in
+[`docs/eu-ai-act-context.md`](docs/eu-ai-act-context.md).
