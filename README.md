@@ -209,6 +209,7 @@ The design rationale, full pattern descriptions, and discussion of failure modes
 ## Regulatory context
 
 Deterministic verification has a specific role under the EU AI Act: it is compliance
-infrastructure, not a regulated AI system. How this library maps to the Act's human
-oversight, robustness, and record-keeping requirements is discussed in
-[`docs/eu-ai-act-context.md`](docs/eu-ai-act-context.md).
+infrastructure, not a regulated AI system.
+
+- [`docs/eu-ai-act-context.md`](docs/eu-ai-act-context.md) — how this library maps to Art. 12, 14, and 15 (engineering perspective)
+- [`docs/eu-ai-act-risk-classification.md`](docs/eu-ai-act-risk-classification.md) — full risk classification guide for enterprise tax and financial AI: enforcement timeline, Art. 5 elimination, Annex III Category 5 analysis, Art. 50 transparency, and GPAI deployer obligations (8 sections, practitioner reference)
