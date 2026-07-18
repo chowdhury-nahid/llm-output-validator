@@ -8,12 +8,14 @@ from typing import Any
 from .checks import BaseCheck
 from .checks.citation_check import CitationGroundingCheck
 from .checks.confidence_check import ConfidenceCalibrationCheck
+from .checks.consensus_check import CrossModelConsensusCheck
 from .checks.golden_check import GoldenFixture, GoldenRegressionCheck
 from .checks.injection_check import PromptInjectionCheck
 from .checks.jurisdictional_check import JurisdictionalScopingCheck
 from .checks.numeric_boundary_check import NumericBoundaryCheck
 from .checks.schema_check import SchemaValidationCheck
 from .checks.temporal_check import TemporalConsistencyCheck
+from .consensus import ConsensusReference
 from .corpus import DocumentCorpus
 from .models import LLMResponse
 from .range_table import RangeTable
@@ -31,6 +33,7 @@ class OutputValidator:
         extra_injection_patterns: list | None = None,
         reference_date: date | None = None,
         include_golden_check: bool = True,
+        consensus_references: list[ConsensusReference] | None = None,
     ) -> None:
         self.corpus = corpus
         self.range_table = range_table
@@ -47,6 +50,8 @@ class OutputValidator:
         ]
         if include_golden_check and golden_fixtures:
             self._checks.append(GoldenRegressionCheck(fixtures=golden_fixtures))
+        if consensus_references:
+            self._checks.append(CrossModelConsensusCheck(references=consensus_references))
 
     def validate(self, response: LLMResponse) -> VerificationReport:
         start = time.monotonic()
@@ -124,6 +129,7 @@ class OutputValidator:
         corpus_path: Path,
         range_table_path: Path,
         golden_dir: Path | None = None,
+        consensus_dir: Path | None = None,
         **kwargs: Any,
     ) -> OutputValidator:
         corpus = DocumentCorpus.from_json_file(corpus_path)
@@ -131,8 +137,15 @@ class OutputValidator:
         golden_fixtures: list[GoldenFixture] | None = None
         if golden_dir:
             golden_fixtures = GoldenFixture.load_fixtures_from_dir(golden_dir)
+        consensus_references: list[ConsensusReference] | None = None
+        if consensus_dir:
+            consensus_references = ConsensusReference.load_from_dir(consensus_dir)
         return cls(
-            corpus=corpus, range_table=range_table, golden_fixtures=golden_fixtures, **kwargs
+            corpus=corpus,
+            range_table=range_table,
+            golden_fixtures=golden_fixtures,
+            consensus_references=consensus_references,
+            **kwargs,
         )
 
 
