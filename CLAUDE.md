@@ -26,6 +26,7 @@ Deterministic verification layer for LLM outputs in compliance contexts. Flagshi
 6. Confidence scoring (`test_pattern6_confidence`)
 7. Injection detection (`test_pattern7_injection`)
 8. Golden output comparison (`test_pattern8_golden`)
+9. Cross-model consensus (`test_pattern9_consensus`)
 
 ## Commands
 ```bash

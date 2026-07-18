@@ -1,3 +1,4 @@
+from .consensus import ConsensusReference
 from .corpus import DocumentCorpus
 from .exceptions import CalibrationError, ComplianceError, HallucinationError, VerificationError
 from .models import Citation, LLMResponse, RegulatoryCllaim, TaxRateResponse
@@ -8,6 +9,7 @@ from .validator import OutputValidator
 __version__ = "0.1.0"
 
 __all__ = [
+    "ConsensusReference",
     "Citation",
     "RegulatoryCllaim",
     "TaxRateResponse",

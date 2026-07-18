@@ -57,7 +57,7 @@ Three pillars compose into a single verification pass:
 
 ---
 
-## Eight verification patterns
+## Nine verification patterns
 
 ### Pattern 1 — Structural contract validation
 
@@ -228,6 +228,34 @@ def test_golden_regression(fixture: GoldenFixture) -> None:
 
 ---
 
+### Pattern 9 — Cross-model consensus verification
+
+Compare an LLM response against pre-extracted factual claims from multiple independent models. Where several models agree on a specific value, that agreement creates high-confidence reference data. Divergence from consensus is a signal worth investigating.
+
+```python
+from llm_output_validator.consensus import ConsensusClaim, ConsensusReference
+
+ref = ConsensusReference(
+    question_id="germany_corporate_tax",
+    jurisdiction="DE",
+    sources=[...],  # claims from 5 independent models
+    consensus={
+        "rate": ConsensusClaim(
+            consensus_value=0.15,
+            agreement_count=5, total_sources=5,
+            critical=True, tolerance=0.001,
+        ),
+    },
+)
+```
+
+Each consensus claim specifies a `critical` flag: divergence on a critical claim (e.g., a headline tax rate) fails the check; divergence on a non-critical claim (e.g., a threshold boundary) warns. Numeric comparisons use a configurable `tolerance`.
+
+**What it catches:** Factual errors that contradict the agreement of multiple independent sources — wrong rates, wrong thresholds, wrong bracket counts.  
+**What it misses:** Errors where all models agree on the wrong value, or claims not covered by the consensus fixture set.
+
+---
+
 ## Why not just assert?
 
 This is the right question, and it is worth answering directly.
@@ -262,7 +290,7 @@ That is what deterministic verification of non-deterministic systems means in pr
 
 A verification layer narrows the space of valid outputs. It does not guarantee correctness within that space.
 
-- **Semantic correctness within the valid envelope.** A response that passes all eight patterns may still give wrong advice.
+- **Semantic correctness within the valid envelope.** A response that passes all nine patterns may still give wrong advice.
 - **Unknown unknowns in the reference data.** If the range table or corpus is wrong, the verification layer will pass wrong outputs confidently.
 - **Model reasoning errors that produce plausible-but-wrong structure.** A model can produce a valid-looking source ID that happens to exist in the corpus but is irrelevant to the query.
 - **Novel adversarial inputs.** The injection resilience pattern tests against known patterns; novel attacks are outside the tested envelope.

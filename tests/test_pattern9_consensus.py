@@ -82,7 +82,7 @@ def test_consensus_warn_noncritical_divergence():
         ),
     })
     check = CrossModelConsensusCheck(references=[ref])
-    # Rate matches (critical), confidence diverges (non-critical: response has "high", consensus "medium")
+    # Rate matches (critical), confidence diverges (non-critical)
     result = check.run(_make_response("DE", 0.15))
     assert result.status == CheckStatus.WARN
     assert result.severity == "warning"
