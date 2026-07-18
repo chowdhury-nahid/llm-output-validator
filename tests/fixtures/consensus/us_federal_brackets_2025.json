@@ -1,0 +1,55 @@
+{
+  "question_id": "us_federal_brackets_2025",
+  "jurisdiction": "US-FED",
+  "sources": [
+    {"model_name": "claude", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626350, "std_deduction_single": 15750, "std_deduction_joint": 31500}},
+    {"model_name": "gemini", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626351, "std_deduction_single": 15750, "std_deduction_joint": 31500}},
+    {"model_name": "orbitax", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626350, "std_deduction_single": 15750, "std_deduction_joint": 31500}},
+    {"model_name": "deepseek", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626351, "std_deduction_single": 15750, "std_deduction_joint": 31500}},
+    {"model_name": "grok", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626350, "std_deduction_single": 15000, "std_deduction_joint": 30000}}
+  ],
+  "consensus": {
+    "bracket_count": {
+      "consensus_value": 7,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0
+    },
+    "rate_lowest": {
+      "consensus_value": 0.10,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "rate_highest": {
+      "consensus_value": 0.37,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "bracket_10_single_upper": {
+      "consensus_value": 11925,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 1.0
+    },
+    "std_deduction_single": {
+      "consensus_value": 15750,
+      "agreement_count": 4,
+      "total_sources": 5,
+      "critical": false,
+      "tolerance": 1.0
+    },
+    "std_deduction_joint": {
+      "consensus_value": 31500,
+      "agreement_count": 4,
+      "total_sources": 5,
+      "critical": false,
+      "tolerance": 1.0
+    }
+  }
+}

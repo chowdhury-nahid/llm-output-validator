@@ -1,0 +1,41 @@
+{
+  "question_id": "ireland_corporate_tax",
+  "jurisdiction": "IE",
+  "sources": [
+    {"model_name": "claude", "claims": {"trading_rate": 0.125, "passive_rate": 0.25, "capital_gains_rate": 0.33, "pillar_two_rate": 0.15}},
+    {"model_name": "gemini", "claims": {"trading_rate": 0.125, "passive_rate": 0.25, "capital_gains_rate": 0.33, "pillar_two_rate": 0.15}},
+    {"model_name": "orbitax", "claims": {"trading_rate": 0.125, "passive_rate": 0.25, "capital_gains_rate": 0.33, "pillar_two_rate": 0.15}},
+    {"model_name": "deepseek", "claims": {"trading_rate": 0.125, "passive_rate": 0.25, "pillar_two_rate": 0.15}},
+    {"model_name": "grok", "claims": {"trading_rate": 0.125, "passive_rate": 0.25, "capital_gains_rate": 0.33, "pillar_two_rate": 0.15}}
+  ],
+  "consensus": {
+    "trading_rate": {
+      "consensus_value": 0.125,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "passive_rate": {
+      "consensus_value": 0.25,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "capital_gains_rate": {
+      "consensus_value": 0.33,
+      "agreement_count": 4,
+      "total_sources": 5,
+      "critical": false,
+      "tolerance": 0.001
+    },
+    "pillar_two_rate": {
+      "consensus_value": 0.15,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    }
+  }
+}

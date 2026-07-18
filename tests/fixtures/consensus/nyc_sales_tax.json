@@ -1,0 +1,41 @@
+{
+  "question_id": "nyc_sales_tax",
+  "jurisdiction": "US-NYC",
+  "sources": [
+    {"model_name": "claude", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}},
+    {"model_name": "gemini", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}},
+    {"model_name": "orbitax", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}},
+    {"model_name": "deepseek", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}},
+    {"model_name": "grok", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}}
+  ],
+  "consensus": {
+    "combined_rate": {
+      "consensus_value": 0.08875,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "state_rate": {
+      "consensus_value": 0.04,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "city_rate": {
+      "consensus_value": 0.045,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "mctd_rate": {
+      "consensus_value": 0.00375,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    }
+  }
+}

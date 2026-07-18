@@ -1,0 +1,41 @@
+{
+  "question_id": "germany_corporate_tax",
+  "jurisdiction": "DE",
+  "sources": [
+    {"model_name": "claude", "claims": {"kst_rate": 0.15, "solz_rate": 0.00825, "combined_federal_rate": 0.15825, "all_in_avg": 0.30}},
+    {"model_name": "gemini", "claims": {"kst_rate": 0.15, "solz_rate": 0.00825, "combined_federal_rate": 0.15825, "all_in_avg": 0.30}},
+    {"model_name": "orbitax", "claims": {"kst_rate": 0.15, "solz_rate": 0.00825, "combined_federal_rate": 0.15825, "all_in_avg": 0.30}},
+    {"model_name": "deepseek", "claims": {"kst_rate": 0.15, "solz_rate": 0.00825, "combined_federal_rate": 0.15825, "all_in_avg": 0.2983}},
+    {"model_name": "grok", "claims": {"kst_rate": 0.15, "solz_rate": 0.00825, "combined_federal_rate": 0.15825, "all_in_avg": 0.30}}
+  ],
+  "consensus": {
+    "kst_rate": {
+      "consensus_value": 0.15,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "solz_rate": {
+      "consensus_value": 0.00825,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "combined_federal_rate": {
+      "consensus_value": 0.15825,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "all_in_avg": {
+      "consensus_value": 0.30,
+      "agreement_count": 4,
+      "total_sources": 5,
+      "critical": false,
+      "tolerance": 0.02
+    }
+  }
+}

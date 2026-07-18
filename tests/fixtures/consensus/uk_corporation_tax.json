@@ -1,0 +1,41 @@
+{
+  "question_id": "uk_corporation_tax",
+  "jurisdiction": "GB",
+  "sources": [
+    {"model_name": "claude", "claims": {"main_rate": 0.25, "small_profits_rate": 0.19, "small_profits_threshold": 50000, "main_rate_threshold": 250000}},
+    {"model_name": "gemini", "claims": {"main_rate": 0.25, "small_profits_rate": 0.19, "small_profits_threshold": 50000, "main_rate_threshold": 250000}},
+    {"model_name": "orbitax", "claims": {"main_rate": 0.25, "small_profits_rate": 0.19, "small_profits_threshold": 50000, "main_rate_threshold": 250000}},
+    {"model_name": "deepseek", "claims": {"main_rate": 0.25, "small_profits_rate": 0.19, "small_profits_threshold": 50000, "main_rate_threshold": 250000}},
+    {"model_name": "grok", "claims": {"main_rate": 0.25, "small_profits_rate": 0.19, "small_profits_threshold": 50000, "main_rate_threshold": 250000}}
+  ],
+  "consensus": {
+    "main_rate": {
+      "consensus_value": 0.25,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "small_profits_rate": {
+      "consensus_value": 0.19,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": true,
+      "tolerance": 0.001
+    },
+    "small_profits_threshold": {
+      "consensus_value": 50000,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": false,
+      "tolerance": 1.0
+    },
+    "main_rate_threshold": {
+      "consensus_value": 250000,
+      "agreement_count": 5,
+      "total_sources": 5,
+      "critical": false,
+      "tolerance": 1.0
+    }
+  }
+}
