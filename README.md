@@ -49,7 +49,7 @@ Schema validation runs first and fails fast. If the response is structurally inv
 
 ---
 
-## Eight verification patterns
+## Nine verification patterns
 
 | Pattern | Check | Catches |
 |---------|-------|---------|
@@ -61,6 +61,7 @@ Schema validation runs first and fails fast. If the response is structurally inv
 | 6 | Confidence calibration | High confidence asserted with low-authority or absent citations |
 | 7 | Prompt injection resilience | Structural corruption from injected instructions, jurisdiction overrides |
 | 8 | Golden fixture regression | Regressions from prompt changes, model upgrades, index updates |
+| 9 | Cross-model consensus | Factual claims that contradict agreement across multiple independent AI models |
 
 None of these checks require knowing the correct answer. All of them are deterministic.
 
@@ -157,7 +158,7 @@ Elapsed     : 0.1ms
 
 A verification layer narrows the space of valid outputs. It does not guarantee correctness within that space.
 
-- A response that passes all eight patterns may still give wrong advice
+- A response that passes all nine patterns may still give wrong advice
 - If the reference corpus or range table is wrong, the layer will pass wrong outputs confidently
 - The injection resilience pattern tests against known patterns — novel attacks are outside the tested envelope
 
@@ -193,9 +194,11 @@ src/llm_output_validator/
 └── cli.py           # llm-validate entrypoint
 
 tests/
-├── test_pattern{1-8}_*.py   # one test file per pattern
+├── test_pattern{1-9}_*.py   # one test file per pattern
 ├── test_properties.py       # Hypothesis property-based fuzzing
-└── fixtures/golden/         # regression fixtures (US-CA, EU DE VAT)
+└── fixtures/
+    ├── golden/              # regression fixtures (US-CA, EU DE VAT)
+    └── consensus/           # cross-model consensus reference data
 ```
 
 ---
