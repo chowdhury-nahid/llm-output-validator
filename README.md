@@ -1,5 +1,9 @@
 # llm-output-validator
 
+[![CI](https://github.com/chowdhury-nahid/llm-output-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/chowdhury-nahid/llm-output-validator/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 LLMs produce plausible text, not verified facts. For most applications that is acceptable. For systems where outputs drive financial, legal, or compliance decisions, it is not.
 
 This library defines a **deterministic verification layer** — a set of composable checks that wrap LLM outputs in contracts a test suite can enforce, without making the test suite non-deterministic itself.
