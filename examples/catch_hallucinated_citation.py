@@ -1,4 +1,4 @@
-"""End-to-end example: validate a simulated LLM response."""
+"""Example: detect a hallucinated citation not present in the retrieval corpus."""
 
 from datetime import date
 
@@ -8,7 +8,6 @@ from llm_output_validator import (
     LLMResponse,
     OutputValidator,
     RangeTable,
-    RegulatoryCllaim,
     TaxRateResponse,
 )
 from llm_output_validator.exporters import TextReportExporter
@@ -17,7 +16,6 @@ corpus = DocumentCorpus.from_dict(
     {
         "IRS-2023-001": 1.0,
         "CA-FTB-2023-TAX": 0.9,
-        "USC-TITLE26-SEC11": 1.0,
     }
 )
 
@@ -44,14 +42,11 @@ response = LLMResponse(
     ),
     citations=[
         Citation(document_id="IRS-2023-001"),
-        Citation(document_id="CA-FTB-2023-TAX"),
-        Citation(document_id="USC-TITLE26-SEC11"),
-    ],
-    regulatory_claims=[
-        RegulatoryCllaim(jurisdiction="US-CA", claim_text="California state income tax applies."),
+        Citation(document_id="FAKE-DOC-999"),  # not in corpus
     ],
     raw_prompt="What is the California state income tax rate for 2023?",
 )
 
 report = validator.validate(response)
 print(TextReportExporter.export(report))
+# citation_grounding check will FAIL — FAKE-DOC-999 is not in the corpus

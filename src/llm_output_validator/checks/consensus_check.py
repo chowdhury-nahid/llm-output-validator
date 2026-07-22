@@ -37,22 +37,26 @@ class CrossModelConsensusCheck(BaseCheck):
 
             response_value = response_claims[claim_key]
             if consensus_claim.matches(response_value):
-                matched.append({
-                    "claim_key": claim_key,
-                    "value": response_value,
-                    "consensus_value": consensus_claim.consensus_value,
-                    "agreement": f"{consensus_claim.agreement_count}"
-                    f"/{consensus_claim.total_sources}",
-                })
+                matched.append(
+                    {
+                        "claim_key": claim_key,
+                        "value": response_value,
+                        "consensus_value": consensus_claim.consensus_value,
+                        "agreement": f"{consensus_claim.agreement_count}"
+                        f"/{consensus_claim.total_sources}",
+                    }
+                )
             else:
-                diverged.append({
-                    "claim_key": claim_key,
-                    "value": response_value,
-                    "consensus_value": consensus_claim.consensus_value,
-                    "agreement": f"{consensus_claim.agreement_count}"
-                    f"/{consensus_claim.total_sources}",
-                    "critical": consensus_claim.critical,
-                })
+                diverged.append(
+                    {
+                        "claim_key": claim_key,
+                        "value": response_value,
+                        "consensus_value": consensus_claim.consensus_value,
+                        "agreement": f"{consensus_claim.agreement_count}"
+                        f"/{consensus_claim.total_sources}",
+                        "critical": consensus_claim.critical,
+                    }
+                )
 
         testable = len(matched) + len(diverged)
         total_consensus = len(ref.consensus)
@@ -85,9 +89,7 @@ class CrossModelConsensusCheck(BaseCheck):
                 check_name=self.check_name,
                 status=CheckStatus.FAIL,
                 severity="error",
-                message=(
-                    f"Critical consensus divergence for {jurisdiction}: {labels}"
-                ),
+                message=(f"Critical consensus divergence for {jurisdiction}: {labels}"),
                 detail=detail,
             )
 
@@ -97,9 +99,7 @@ class CrossModelConsensusCheck(BaseCheck):
             check_name=self.check_name,
             status=CheckStatus.WARN,
             severity="warning",
-            message=(
-                f"Non-critical consensus divergence for {jurisdiction}: {labels}"
-            ),
+            message=(f"Non-critical consensus divergence for {jurisdiction}: {labels}"),
             detail=detail,
         )
 
