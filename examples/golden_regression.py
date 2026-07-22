@@ -1,4 +1,5 @@
 """Example: run golden fixture regression checks against saved baselines."""
+
 from pathlib import Path
 
 from llm_output_validator import OutputValidator

@@ -1,4 +1,5 @@
 """Example: validate a response against cross-model consensus data."""
+
 from datetime import date
 from pathlib import Path
 

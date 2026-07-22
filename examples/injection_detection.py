@@ -1,4 +1,5 @@
 """Example: detect prompt injection in the raw prompt text."""
+
 from datetime import date
 
 from llm_output_validator import (

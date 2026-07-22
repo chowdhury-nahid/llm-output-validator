@@ -49,9 +49,12 @@ def test_consensus_fixtures_load_from_directory():
 
 
 def test_consensus_pass_matching_rate():
-    ref = _make_reference("DE", {
-        "rate": ConsensusClaim(consensus_value=0.15, agreement_count=5, total_sources=5),
-    })
+    ref = _make_reference(
+        "DE",
+        {
+            "rate": ConsensusClaim(consensus_value=0.15, agreement_count=5, total_sources=5),
+        },
+    )
     check = CrossModelConsensusCheck(references=[ref])
     result = check.run(_make_response("DE", 0.15))
     assert result.status == CheckStatus.PASS
@@ -59,11 +62,17 @@ def test_consensus_pass_matching_rate():
 
 
 def test_consensus_fail_critical_divergence():
-    ref = _make_reference("DE", {
-        "rate": ConsensusClaim(
-            consensus_value=0.15, agreement_count=5, total_sources=5, critical=True,
-        ),
-    })
+    ref = _make_reference(
+        "DE",
+        {
+            "rate": ConsensusClaim(
+                consensus_value=0.15,
+                agreement_count=5,
+                total_sources=5,
+                critical=True,
+            ),
+        },
+    )
     check = CrossModelConsensusCheck(references=[ref])
     result = check.run(_make_response("DE", 0.25))
     assert result.status == CheckStatus.FAIL
@@ -73,14 +82,23 @@ def test_consensus_fail_critical_divergence():
 
 
 def test_consensus_warn_noncritical_divergence():
-    ref = _make_reference("DE", {
-        "rate": ConsensusClaim(
-            consensus_value=0.15, agreement_count=5, total_sources=5, critical=True,
-        ),
-        "confidence": ConsensusClaim(
-            consensus_value="medium", agreement_count=3, total_sources=5, critical=False,
-        ),
-    })
+    ref = _make_reference(
+        "DE",
+        {
+            "rate": ConsensusClaim(
+                consensus_value=0.15,
+                agreement_count=5,
+                total_sources=5,
+                critical=True,
+            ),
+            "confidence": ConsensusClaim(
+                consensus_value="medium",
+                agreement_count=3,
+                total_sources=5,
+                critical=False,
+            ),
+        },
+    )
     check = CrossModelConsensusCheck(references=[ref])
     # Rate matches (critical), confidence diverges (non-critical)
     result = check.run(_make_response("DE", 0.15))
@@ -96,31 +114,46 @@ def test_consensus_warn_no_reference():
 
 
 def test_consensus_tolerance_pass():
-    ref = _make_reference("DE", {
-        "rate": ConsensusClaim(
-            consensus_value=0.15, agreement_count=5, total_sources=5, tolerance=0.005,
-        ),
-    })
+    ref = _make_reference(
+        "DE",
+        {
+            "rate": ConsensusClaim(
+                consensus_value=0.15,
+                agreement_count=5,
+                total_sources=5,
+                tolerance=0.005,
+            ),
+        },
+    )
     check = CrossModelConsensusCheck(references=[ref])
     result = check.run(_make_response("DE", 0.1504))
     assert result.status == CheckStatus.PASS
 
 
 def test_consensus_tolerance_fail():
-    ref = _make_reference("DE", {
-        "rate": ConsensusClaim(
-            consensus_value=0.15, agreement_count=5, total_sources=5, tolerance=0.001,
-        ),
-    })
+    ref = _make_reference(
+        "DE",
+        {
+            "rate": ConsensusClaim(
+                consensus_value=0.15,
+                agreement_count=5,
+                total_sources=5,
+                tolerance=0.001,
+            ),
+        },
+    )
     check = CrossModelConsensusCheck(references=[ref])
     result = check.run(_make_response("DE", 0.16))
     assert result.status == CheckStatus.FAIL
 
 
 def test_consensus_detail_structure():
-    ref = _make_reference("DE", {
-        "rate": ConsensusClaim(consensus_value=0.15, agreement_count=5, total_sources=5),
-    })
+    ref = _make_reference(
+        "DE",
+        {
+            "rate": ConsensusClaim(consensus_value=0.15, agreement_count=5, total_sources=5),
+        },
+    )
     check = CrossModelConsensusCheck(references=[ref])
     result = check.run(_make_response("DE", 0.15))
     assert "jurisdiction" in result.detail

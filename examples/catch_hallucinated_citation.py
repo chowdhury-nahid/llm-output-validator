@@ -1,4 +1,5 @@
 """Example: detect a hallucinated citation not present in the retrieval corpus."""
+
 from datetime import date
 
 from llm_output_validator import (
@@ -11,14 +12,18 @@ from llm_output_validator import (
 )
 from llm_output_validator.exporters import TextReportExporter
 
-corpus = DocumentCorpus.from_dict({
-    "IRS-2023-001": 1.0,
-    "CA-FTB-2023-TAX": 0.9,
-})
+corpus = DocumentCorpus.from_dict(
+    {
+        "IRS-2023-001": 1.0,
+        "CA-FTB-2023-TAX": 0.9,
+    }
+)
 
-range_table = RangeTable.from_dict({
-    "US-CA": {"lo": 0.07, "hi": 0.145},
-})
+range_table = RangeTable.from_dict(
+    {
+        "US-CA": {"lo": 0.07, "hi": 0.145},
+    }
+)
 
 validator = OutputValidator(
     corpus=corpus,
