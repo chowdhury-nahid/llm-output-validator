@@ -299,6 +299,89 @@ The verification layer is a necessary condition for safe LLM output in complianc
 
 ---
 
+## Non-deterministic evaluation layer
+
+The nine patterns above are deterministic: they produce identical results on identical inputs and never call an LLM. That is their strength — they run in CI, they are fast, they are cheap, and they never flake.
+
+But deterministic checks cannot catch everything. A response can pass all nine patterns while still being semantically wrong: claims that are plausible but unsupported by the source, answers that drift from the question asked, or facts that contradict the provided context in ways that preserve structural validity.
+
+The evaluation layer (`evals/`) addresses this gap with scored, non-deterministic metrics that operate on semantic content rather than structural contracts.
+
+### When to use which
+
+| Concern | Layer | Why |
+|---|---|---|
+| Missing fields, wrong types, malformed dates | Deterministic (Patterns 1–9) | Binary correctness — the field is there or it isn't |
+| Fabricated citations, out-of-range numbers | Deterministic | Reference data makes the check objective |
+| Claims not supported by source context | Non-deterministic (Faithfulness) | Requires semantic comparison, not string matching |
+| Answer doesn't address the question | Non-deterministic (Relevancy) | Topical alignment is a gradient, not a binary |
+| Facts that contradict the provided context | Non-deterministic (Hallucination) | Structural validity doesn't imply factual accuracy |
+
+**Design principle: run deterministic first, non-deterministic second.** Deterministic checks are fast (~1ms) and free. Non-deterministic evals may need LLM calls and cost tokens. A response that fails structural validation does not need semantic evaluation.
+
+### Scoring model
+
+Deterministic checks produce PASS/WARN/FAIL — a contract is either satisfied or violated.
+
+Non-deterministic evals produce a **score from 0.0 to 1.0** with a confidence level. The score maps to a three-way decision gate via configurable thresholds:
+
+```
+Score ∈ [pass_above, 1.0]  →  PASS   (response is acceptable)
+Score ∈ [block_below, pass_above)  →  FLAG   (human review recommended)
+Score ∈ [0.0, block_below)  →  BLOCK  (response should not be used)
+```
+
+The thresholds are configurable per evaluation and per deployment context. A compliance-critical pipeline might set `pass_above=0.95, block_below=0.7`. A research pipeline might use `pass_above=0.6, block_below=0.2`.
+
+The decision gate is always rule-driven: the model (or heuristic) produces the score, the rules produce the decision.
+
+### Three evaluation metrics
+
+**Faithfulness** — what fraction of claims in the answer are supported by the provided context. Implements the core concept from RAGAS faithfulness: decompose the answer into atomic claims, then verify each against context. A faithfulness score of 0.8 means 80% of claims are grounded.
+
+**Answer relevancy** — how well the answer addresses the question asked. Combines semantic similarity (TF-IDF cosine) with question-term coverage to detect answers that are factually correct but off-topic. Addresses the failure mode where an LLM generates coherent text about the wrong subject.
+
+**Hallucination detection** — identifies claims in the answer that are not present in (or are contradicted by) the source context. Distinct from the deterministic injection check (Pattern 7), which catches structural prompt injection. This eval catches semantic fabrication: plausible-sounding facts with no grounding. Combines sentence-level token analysis with entity verification (numbers, dates, percentages, currencies).
+
+### Two evaluation strategies
+
+Each eval supports two strategies:
+
+- **Lexical** (default): heuristic-based, no external dependencies. Uses token overlap, cosine similarity, and entity matching. Fast (~1ms), deterministic, runs in CI. Lower accuracy but provides a useful lower-bound estimate.
+- **LLM judge**: uses the `LLMJudge` protocol to call any LLM for more accurate evaluation. Higher accuracy but costs tokens and introduces non-determinism. The `LLMJudge` protocol is provider-agnostic — any client that takes a prompt and returns text satisfies it.
+
+### Composition with deterministic checks
+
+The `EvalPipeline` orchestrates multiple evaluations and aggregates decisions. It is designed to compose with the deterministic `OutputValidator`:
+
+```python
+from llm_output_validator import OutputValidator
+from llm_output_validator.evals import (
+    EvalContext, EvalPipeline,
+    FaithfulnessEval, AnswerRelevancyEval, HallucinationEval,
+)
+
+# Layer 1: deterministic checks (fast, cheap)
+validator = OutputValidator.build_default(...)
+det_report = validator.validate(response)
+if det_report.passed():
+    # Layer 2: non-deterministic evals (slower, may need LLM)
+    pipeline = EvalPipeline([
+        FaithfulnessEval(),
+        AnswerRelevancyEval(),
+        HallucinationEval(),
+    ])
+    eval_report = pipeline.run(EvalContext(
+        question=prompt,
+        answer=response_text,
+        context=retrieved_documents,
+    ))
+```
+
+The pipeline supports fail-fast mode (`fail_fast=True`) to stop on the first BLOCK, and its decision is the worst result across all evals: any BLOCK → BLOCK, any FLAG → FLAG, all PASS → PASS.
+
+---
+
 ## Tech stack
 
 - Python 3.11+
