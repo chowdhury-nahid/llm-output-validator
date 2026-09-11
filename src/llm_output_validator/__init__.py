@@ -3,6 +3,8 @@ from .corpus import DocumentCorpus
 from .evals import (
     AnswerRelevancyEval,
     BaseEval,
+    ContextPrecisionEval,
+    ContextRecallEval,
     EvalContext,
     EvalDecision,
     EvalPipeline,
@@ -43,6 +45,8 @@ __all__ = [
     # Non-deterministic evaluation
     "AnswerRelevancyEval",
     "BaseEval",
+    "ContextPrecisionEval",
+    "ContextRecallEval",
     "EvalContext",
     "EvalDecision",
     "EvalPipeline",
