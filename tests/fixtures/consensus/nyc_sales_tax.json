@@ -4,7 +4,7 @@
   "sources": [
     {"model_name": "claude", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}},
     {"model_name": "gemini", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}},
-    {"model_name": "orbitax", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}},
+    {"model_name": "tax_platform", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}},
     {"model_name": "deepseek", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}},
     {"model_name": "grok", "claims": {"combined_rate": 0.08875, "state_rate": 0.04, "city_rate": 0.045, "mctd_rate": 0.00375}}
   ],

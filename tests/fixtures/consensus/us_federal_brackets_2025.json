@@ -4,7 +4,7 @@
   "sources": [
     {"model_name": "claude", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626350, "std_deduction_single": 15750, "std_deduction_joint": 31500}},
     {"model_name": "gemini", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626351, "std_deduction_single": 15750, "std_deduction_joint": 31500}},
-    {"model_name": "orbitax", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626350, "std_deduction_single": 15750, "std_deduction_joint": 31500}},
+    {"model_name": "tax_platform", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626350, "std_deduction_single": 15750, "std_deduction_joint": 31500}},
     {"model_name": "deepseek", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626351, "std_deduction_single": 15750, "std_deduction_joint": 31500}},
     {"model_name": "grok", "claims": {"bracket_count": 7, "rate_lowest": 0.10, "rate_highest": 0.37, "bracket_10_single_upper": 11925, "bracket_37_single_lower": 626350, "std_deduction_single": 15000, "std_deduction_joint": 30000}}
   ],

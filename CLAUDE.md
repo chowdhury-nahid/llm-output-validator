@@ -1,7 +1,7 @@
 # CLAUDE.md — llm-output-validator
 
 ## What this is
-Deterministic verification layer for LLM outputs in compliance contexts. Flagship portfolio repo for the AI Verification Engineer repositioning. Currently private — must be reviewed and made public (tracked in life-ops career/001).
+Deterministic verification layer for LLM outputs in compliance contexts. Nine composable verification patterns plus a non-deterministic evaluation layer with five RAGAS-style metrics.
 
 ## Tech stack
 - Python 3.11+, Hatchling build system
@@ -40,4 +40,4 @@ pip install -e ".[dev]"  # install with dev dependencies
 ## Rules
 - No fabricated metrics — if a number isn't measured, don't claim it
 - Incremental commits — no single large dump (timestamps visible to reviewers)
-- This repo anchors all AI verification claims in the CV/LinkedIn — artifact must exist before any public claim
+- No claim without a working artifact — every public statement about this project must be backed by code
