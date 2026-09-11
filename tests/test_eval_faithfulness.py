@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
-
 from llm_output_validator.evals import EvalContext, EvalDecision, ThresholdConfig
 from llm_output_validator.evals.faithfulness import (
     FaithfulnessEval,
     _decompose_into_claims,
     _lexical_overlap,
 )
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import json
 
-import pytest
-
 from llm_output_validator.evals import EvalContext, EvalDecision, ThresholdConfig
 from llm_output_validator.evals.hallucination import (
     HallucinationEval,
@@ -13,7 +11,6 @@ from llm_output_validator.evals.hallucination import (
     _extract_entities,
     _sentence_grounding_score,
 )
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

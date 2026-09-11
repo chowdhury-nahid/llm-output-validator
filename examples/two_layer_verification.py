@@ -65,7 +65,9 @@ for r in report.results:
     print(f"  {r.eval_name}: score={r.score.value:.2f} → {r.decision.value}")
     if r.claims:
         for claim in r.claims:
-            print(f"    - [{claim.get('verdict', 'unknown')}] {claim.get('claim', claim.get('text', ''))}")
+            verdict = claim.get("verdict", "unknown")
+            text = claim.get("claim", claim.get("text", ""))
+            print(f"    - [{verdict}] {text}")
 
 # Show the LLMJudge protocol — any LLM client that implements evaluate(prompt) -> str works
 print("\n=== LLMJudge protocol ===")

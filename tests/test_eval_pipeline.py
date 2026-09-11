@@ -13,9 +13,8 @@ from llm_output_validator.evals import (
 )
 from llm_output_validator.evals.faithfulness import FaithfulnessEval
 from llm_output_validator.evals.hallucination import HallucinationEval
-from llm_output_validator.evals.pipeline import EvalPipeline, EvalReport
+from llm_output_validator.evals.pipeline import EvalPipeline
 from llm_output_validator.evals.relevancy import AnswerRelevancyEval
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

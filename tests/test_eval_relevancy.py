@@ -12,7 +12,6 @@ from llm_output_validator.evals.relevancy import (
     _tokenize,
 )
 
-
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 
