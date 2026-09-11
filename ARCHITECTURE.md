@@ -316,6 +316,8 @@ The evaluation layer (`evals/`) addresses this gap with scored, non-deterministi
 | Claims not supported by source context | Non-deterministic (Faithfulness) | Requires semantic comparison, not string matching |
 | Answer doesn't address the question | Non-deterministic (Relevancy) | Topical alignment is a gradient, not a binary |
 | Facts that contradict the provided context | Non-deterministic (Hallucination) | Structural validity doesn't imply factual accuracy |
+| Retrieval returned irrelevant documents | Non-deterministic (Context Precision) | Context ordering affects generation quality |
+| Retrieval missed needed documents | Non-deterministic (Context Recall) | Missing context causes hallucination or incompleteness |
 
 **Design principle: run deterministic first, non-deterministic second.** Deterministic checks are fast (~1ms) and free. Non-deterministic evals may need LLM calls and cost tokens. A response that fails structural validation does not need semantic evaluation.
 
@@ -335,13 +337,19 @@ The thresholds are configurable per evaluation and per deployment context. A com
 
 The decision gate is always rule-driven: the model (or heuristic) produces the score, the rules produce the decision.
 
-### Three evaluation metrics
+### Five evaluation metrics
 
 **Faithfulness** — what fraction of claims in the answer are supported by the provided context. Implements the core concept from RAGAS faithfulness: decompose the answer into atomic claims, then verify each against context. A faithfulness score of 0.8 means 80% of claims are grounded.
 
 **Answer relevancy** — how well the answer addresses the question asked. Combines semantic similarity (TF-IDF cosine) with question-term coverage to detect answers that are factually correct but off-topic. Addresses the failure mode where an LLM generates coherent text about the wrong subject.
 
 **Hallucination detection** — identifies claims in the answer that are not present in (or are contradicted by) the source context. Distinct from the deterministic injection check (Pattern 7), which catches structural prompt injection. This eval catches semantic fabrication: plausible-sounding facts with no grounding. Combines sentence-level token analysis with entity verification (numbers, dates, percentages, currencies).
+
+**Context precision** — measures whether relevant context items are ranked above irrelevant ones. Implements the core concept from RAGAS context_precision: for each context item in order, judge whether it is relevant to the question, then compute average precision. A score of 1.0 means all relevant documents appear before irrelevant ones. This metric evaluates retrieval quality — noisy context increases hallucination risk even when the answer is otherwise correct.
+
+**Context recall** — measures whether the context contains all information needed to produce the answer. Decomposes the answer into atomic claims, then checks what fraction can be attributed to the provided context. A score of 0.6 means 40% of the answer relies on information not in the retrieved documents — either retrieval missed relevant documents or the model fabricated claims.
+
+Together, context precision and context recall close the structural blind spot in the first three evals: faithfulness, relevancy, and hallucination detection all assume the provided context is adequate. When retrieval fails silently, those evals may still pass while the response is wrong. The context evals catch this by evaluating the retrieval layer itself.
 
 ### Two evaluation strategies
 
@@ -359,6 +367,7 @@ from llm_output_validator import OutputValidator
 from llm_output_validator.evals import (
     EvalContext, EvalPipeline,
     FaithfulnessEval, AnswerRelevancyEval, HallucinationEval,
+    ContextPrecisionEval, ContextRecallEval,
 )
 
 # Layer 1: deterministic checks (fast, cheap)
@@ -367,9 +376,11 @@ det_report = validator.validate(response)
 if det_report.passed():
     # Layer 2: non-deterministic evals (slower, may need LLM)
     pipeline = EvalPipeline([
-        FaithfulnessEval(),
-        AnswerRelevancyEval(),
-        HallucinationEval(),
+        ContextPrecisionEval(),   # is the context good?
+        ContextRecallEval(),      # is the context complete?
+        FaithfulnessEval(),       # are claims grounded?
+        AnswerRelevancyEval(),    # does it answer the question?
+        HallucinationEval(),      # any fabricated facts?
     ])
     eval_report = pipeline.run(EvalContext(
         question=prompt,
