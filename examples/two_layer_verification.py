@@ -23,17 +23,19 @@ from llm_output_validator.evals import (
 strict_threshold = ThresholdConfig(pass_above=0.8, block_below=0.4)
 
 # Build the evaluation pipeline
-pipeline = EvalPipeline([
-    FaithfulnessEval(threshold=strict_threshold),
-    AnswerRelevancyEval(threshold=strict_threshold),
-    HallucinationEval(threshold=strict_threshold),
-])
+pipeline = EvalPipeline(
+    [
+        FaithfulnessEval(threshold=strict_threshold),
+        AnswerRelevancyEval(threshold=strict_threshold),
+        HallucinationEval(threshold=strict_threshold),
+    ]
+)
 
 # Simulate a well-grounded response
 good_ctx = EvalContext(
     question="What is the corporate tax rate in Germany?",
     answer="The corporate tax rate in Germany is 15% at the federal level. "
-           "A solidarity surcharge of 5.5% applies on top.",
+    "A solidarity surcharge of 5.5% applies on top.",
     context=[
         "The corporate income tax rate in Germany is 15% at the federal level. "
         "A solidarity surcharge (Solidaritätszuschlag) of 5.5% is levied "
@@ -52,10 +54,8 @@ for r in report.results:
 bad_ctx = EvalContext(
     question="What is the corporate tax rate in Germany?",
     answer="The corporate tax rate in Germany is 42%. "
-           "This was introduced by the Quantum Tax Reform of 2099.",
-    context=[
-        "The corporate income tax rate in Germany is 15% at the federal level."
-    ],
+    "This was introduced by the Quantum Tax Reform of 2099.",
+    context=["The corporate income tax rate in Germany is 15% at the federal level."],
 )
 
 print("\n=== Hallucinated response ===")
