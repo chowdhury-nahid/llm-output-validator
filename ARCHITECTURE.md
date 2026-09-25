@@ -393,6 +393,46 @@ The pipeline supports fail-fast mode (`fail_fast=True`) to stop on the first BLO
 
 ---
 
+## Validation MCP server: a general-purpose response validator
+
+The nine deterministic patterns and five evals above are all tied to the tax-domain `LLMResponse`/`TaxRateResponse` schema. The MCP server (`server.py`, `generic/`) is a separate, schema-agnostic layer for validating *any* AI response — not this repo's own domain — exposed as a single MCP tool, `llmval_validate_response`.
+
+It is designed as three tiers. **Only Tier 1 is built.** Tiers 2 and 3 are documented here as the intended design, not claimed as shipped — per this repo's own build-then-claim rule, nothing below is referenced from the README's feature list or any public claim until it exists.
+
+### Tier 1 — deterministic, no LLM (built)
+
+Four generic checks, in `generic/`, each operating on `EvalContext` (question, answer, context, metadata) rather than the tax-domain model, so they work on any response:
+
+| Check | What it catches |
+|---|---|
+| `json_schema` | Answer isn't valid JSON, or doesn't match a caller-supplied schema |
+| `injection` | Prompt-injection markers in the answer or any context block (reuses `checks/injection_check.py`'s pattern list) |
+| `pii` | Email, phone, Luhn-checked credit card, IBAN, IPv4 — regex-level, deliberately shallow |
+| `content_rules` | Caller-supplied required/banned literal terms (no regex — see below) |
+
+A **scope profile** (`generic/profile.py`) selects which checks and lexical evals run, and their thresholds. Two built-in presets ship in v1 (`minimal`, `rag`); a caller can also pass a fully custom inline profile object. The **runner** (`generic/runner.py`) ties checks, profile and the existing `EvalPipeline` together into one `validate(ctx, profile)` call — always with `judge=None`, which is the one line that keeps this tier free of LLM calls.
+
+**Why `content_rules` has no user-supplied regex.** A caller-controlled regex evaluated against caller-controlled text is a classic ReDoS vector: a crafted pattern can hang the process. Rather than mitigate that with a timeout, v1 removes it at the source — `content_rules` matches literal terms only. A regex variant, if ever added, would need its own sandboxed evaluation, not a bolt-on timeout.
+
+**Why `pii` checks Luhn before flagging a "credit card".** Any 16-digit string matches the shape of a card number — an order ID, an invoice number, a phone number with the separators stripped. Without the Luhn checksum, the check would flag most numeric IDs a business document contains. This is the same reasoning as Pattern 3's numeric boundary check: a shape match alone is not evidence.
+
+### Tier 2 — LLM-powered / agentic (planned, not built)
+
+The existing `LLMJudge` protocol already supports an LLM-judge strategy for the five evals (see above) — Tier 2 is largely wiring that in at the MCP layer: a caller supplies their own provider key, the runner passes a real `judge` instead of `None`, and the tool reports `llm_tokens_used` and cost instead of always returning `0`. A multi-step agentic verifier (the agent re-checks its own claims, or cross-checks a second model) is also planned here, not in Tier 1.
+
+### Tier 3 — plugin evaluators (planned, not built)
+
+An `Evaluator` plugin interface, discovered through entry points, letting an operator wrap an external open-source evaluator behind the same `llmval_validate_response` contract. Planned order: Presidio first (a real NER-based PII detector, replacing Tier 1's regex-level `pii` check for operators who install it), then DeepEval (LLM-judge metric suites, which need Tier 2's judge wiring to exist first).
+
+### MCP-specific design notes
+
+- **One tool, not several.** `llmval_validate_response`'s own Pydantic input schema documents every check and profile parameter, so separate `list_checks`/`list_profiles`/`get_profile` tools were cut in review rather than shipped — an unknown profile name's error message lists the valid built-in names instead.
+- **Every check and the runner itself never raise.** An oversized input, a malformed caller-supplied JSON Schema, or a non-string field all become a `CheckResult`/`ValidationReport` with a `FAIL`/`BLOCK` status, never an uncaught exception — this is enforced by a pass test and a catch test per check.
+- **The server tests its own MCP contract.** `tests/test_mcp_server.py` connects to the server in memory and asserts the tool list, its read-only annotations, that it has a real `outputSchema`, that `structuredContent` is populated on success, and that bad input produces `isError` rather than a crash or a raw traceback.
+- **stdio only, stderr-only logging.** stdout carries the MCP protocol; a remote streamable-HTTP transport is future work, not v1.
+
+---
+
 ## Tech stack
 
 - Python 3.11+

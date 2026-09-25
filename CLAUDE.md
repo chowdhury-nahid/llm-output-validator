@@ -1,7 +1,7 @@
 # CLAUDE.md — llm-output-validator
 
 ## What this is
-Deterministic verification layer for LLM outputs in compliance contexts. Nine composable verification patterns plus a non-deterministic evaluation layer with five RAGAS-style metrics.
+Deterministic verification layer for LLM outputs in compliance contexts. Nine composable verification patterns plus a non-deterministic evaluation layer with five RAGAS-style metrics. Also exposes a general-purpose (schema-agnostic) AI response validator as an MCP server — see "MCP server" below.
 
 ## Tech stack
 - Python 3.11+, Hatchling build system
@@ -12,10 +12,17 @@ Deterministic verification layer for LLM outputs in compliance contexts. Nine co
 
 ## Project structure
 - `src/llm_output_validator/` — main package
+  - `checks/` — the 9 tax-domain deterministic patterns
+  - `evals/` — the 5 lexical/LLM-judge evals
+  - `generic/` — schema-agnostic checks, scope profiles, runner (MCP server's Tier 1)
+  - `server.py` — the MCP server itself (`llmval_validate_response`)
 - `tests/` — test suite organized by verification pattern
 - `examples/` — usage examples
 - `docs/` — documentation
 - `ARCHITECTURE.md` — system design
+
+## MCP server
+`pip install "llm-output-validator[mcp]"` adds the `llm-validate-mcp` entry point. One tool, `llmval_validate_response`, validates any AI response (not just this repo's tax domain) with no LLM calls (Tier 1). Two built-in scope profiles: `minimal`, `rag`. Full design, including the planned (not built) Tier 2/3, is in ARCHITECTURE.md's "Validation MCP server" section. Self-tests: `tests/test_mcp_server.py` (in-memory client), plus a pass/catch test pair per generic check in `tests/test_generic_*.py`.
 
 ## Verification patterns (test files map 1:1)
 1. Schema validation (`test_pattern1_schema`)

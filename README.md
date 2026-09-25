@@ -170,6 +170,64 @@ The verification layer is a necessary condition for safe LLM output in complianc
 
 ---
 
+## Use as an MCP server
+
+The checks above are tied to the tax-domain `TaxRateResponse` schema. For validating *any* AI response — not just this repo's own domain — install the `mcp` extra and run the bundled MCP server:
+
+```bash
+pip install "llm-output-validator[mcp]"
+claude mcp add llm-validator -- llm-validate-mcp
+```
+
+It exposes one tool, `llmval_validate_response`, which runs a no-LLM (Tier 1) scope profile against any answer and returns a structured pass/flag/block verdict:
+
+```python
+{
+    "answer": "It was completed in 1920, stands 500 meters tall, and cost 50000 francs.",
+    "question": "When was it completed and how tall is it?",
+    "context": ["The tower was completed in 1889 and stands 330 meters tall."],
+    "profile_name": "rag",
+}
+```
+
+```json
+{
+  "decision": "flag",
+  "profile": "rag",
+  "elapsed_ms": 0.3,
+  "llm_tokens_used": 0,
+  "checks": [
+    {"check_name": "injection", "status": "pass", "detail": {"matches": []}},
+    {"check_name": "pii", "status": "pass", "detail": {"findings": []}}
+  ],
+  "evals": {
+    "decision": "flag",
+    "eval_count": 3,
+    "evals": [
+      {
+        "eval_name": "hallucination_detection",
+        "score": 0.6,
+        "decision": "flag",
+        "reasoning": "0/1 statements flagged as hallucinated, entity grounding=0.00 (strategy: lexical)"
+      }
+    ]
+  }
+}
+```
+
+This is real output from `examples/mcp_validate.py`, not a fabricated sample — run the script yourself to reproduce it. Note the honest limit: the lexical strategy verifies *numbers, dates and currencies* against context (which is why the wrong year and height here get flagged), not place names or other prose facts — a plain factual swap like "Paris" → "Berlin" passes this tier undetected. That gap is exactly what an LLM-judge (Tier 2, not yet built) is for.
+
+Two built-in scope profiles ship in v1:
+
+| Profile | What it runs |
+|---|---|
+| `minimal` | Structural + safety checks: injection, pii (json_schema is opt-in, since most answers aren't JSON) |
+| `rag` | Adds the lexical faithfulness/relevancy/hallucination evals (word-overlap based — no LLM call) against supplied context |
+
+Pass a custom `profile` object instead of `profile_name` for finer control — see `examples/mcp_validate.py`. `llm_tokens_used` is always `0` in this Tier: this is the deterministic, no-LLM layer. An LLM-judge tier and plugin evaluators (Presidio, DeepEval) are planned but not yet built — see [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+---
+
 ## Installation
 
 ```bash
