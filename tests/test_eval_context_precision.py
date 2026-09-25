@@ -115,21 +115,25 @@ class TestAveragePrecision:
 
 class TestContextPrecisionLexical:
     def test_all_relevant_context(self) -> None:
-        ctx = _ctx(context=[
-            "The corporate tax rate in Germany is 15% at the federal level.",
-            "Germany applies a solidarity surcharge of 5.5% on corporate tax.",
-        ])
+        ctx = _ctx(
+            context=[
+                "The corporate tax rate in Germany is 15% at the federal level.",
+                "Germany applies a solidarity surcharge of 5.5% on corporate tax.",
+            ]
+        )
         result = ContextPrecisionEval().evaluate(ctx)
         assert result.score.value > 0.5
         assert result.eval_name == "context_precision"
         assert result.detail["strategy"] == "lexical"
 
     def test_all_irrelevant_context(self) -> None:
-        ctx = _ctx(context=[
-            "The weather in Paris is sunny today.",
-            "Python 3.12 introduces new syntax features.",
-            "The recipe calls for two cups of flour.",
-        ])
+        ctx = _ctx(
+            context=[
+                "The weather in Paris is sunny today.",
+                "Python 3.12 introduces new syntax features.",
+                "The recipe calls for two cups of flour.",
+            ]
+        )
         result = ContextPrecisionEval().evaluate(ctx)
         assert result.score.value < 0.5
         assert result.decision in (EvalDecision.FLAG, EvalDecision.BLOCK)
@@ -150,46 +154,56 @@ class TestContextPrecisionLexical:
         assert result.decision in (EvalDecision.FLAG, EvalDecision.BLOCK)
 
     def test_single_relevant_context(self) -> None:
-        ctx = _ctx(context=[
-            "The corporate tax rate in Germany is 15% at the federal level.",
-        ])
+        ctx = _ctx(
+            context=[
+                "The corporate tax rate in Germany is 15% at the federal level.",
+            ]
+        )
         result = ContextPrecisionEval().evaluate(ctx)
         assert result.score.value == 1.0
         assert result.decision == EvalDecision.PASS
 
     def test_custom_threshold(self) -> None:
         threshold = ThresholdConfig(pass_above=0.95, block_below=0.1)
-        ctx = _ctx(context=[
-            "The corporate tax rate in Germany is 15%.",
-            "Unrelated noise about cooking.",
-        ])
+        ctx = _ctx(
+            context=[
+                "The corporate tax rate in Germany is 15%.",
+                "Unrelated noise about cooking.",
+            ]
+        )
         result = ContextPrecisionEval(threshold=threshold).evaluate(ctx)
         assert result.threshold.pass_above == 0.95
 
     def test_claims_contain_context_previews(self) -> None:
-        ctx = _ctx(context=[
-            "Germany tax rate information.",
-            "Something unrelated entirely.",
-        ])
+        ctx = _ctx(
+            context=[
+                "Germany tax rate information.",
+                "Something unrelated entirely.",
+            ]
+        )
         result = ContextPrecisionEval().evaluate(ctx)
         assert len(result.claims) == 2
         assert all("context_preview" in c for c in result.claims)
         assert all("verdict" in c for c in result.claims)
 
     def test_detail_contains_counts(self) -> None:
-        ctx = _ctx(context=[
-            "Corporate tax rate Germany 15%.",
-            "Weather forecast for today.",
-        ])
+        ctx = _ctx(
+            context=[
+                "Corporate tax rate Germany 15%.",
+                "Weather forecast for today.",
+            ]
+        )
         result = ContextPrecisionEval().evaluate(ctx)
         assert "context_count" in result.detail
         assert "relevant_count" in result.detail
         assert result.detail["context_count"] == 2
 
     def test_custom_relevance_threshold(self) -> None:
-        ctx = _ctx(context=[
-            "Germany has a federal corporate tax.",
-        ])
+        ctx = _ctx(
+            context=[
+                "Germany has a federal corporate tax.",
+            ]
+        )
         strict = ContextPrecisionEval(relevance_threshold=0.9).evaluate(ctx)
         lenient = ContextPrecisionEval(relevance_threshold=0.01).evaluate(ctx)
         assert lenient.score.value >= strict.score.value
@@ -201,10 +215,12 @@ class TestContextPrecisionLexical:
 class TestContextPrecisionJudge:
     def test_all_relevant(self) -> None:
         judge = StubJudge(["RELEVANT", "RELEVANT"])
-        ctx = _ctx(context=[
-            "Germany corporate tax is 15%.",
-            "Solidarity surcharge applies at 5.5%.",
-        ])
+        ctx = _ctx(
+            context=[
+                "Germany corporate tax is 15%.",
+                "Solidarity surcharge applies at 5.5%.",
+            ]
+        )
         result = ContextPrecisionEval().evaluate(ctx, judge=judge)
         assert result.score.value == 1.0
         assert result.decision == EvalDecision.PASS
@@ -212,10 +228,12 @@ class TestContextPrecisionJudge:
 
     def test_all_irrelevant(self) -> None:
         judge = StubJudge(["IRRELEVANT", "IRRELEVANT"])
-        ctx = _ctx(context=[
-            "Weather in Paris.",
-            "Recipe for soup.",
-        ])
+        ctx = _ctx(
+            context=[
+                "Weather in Paris.",
+                "Recipe for soup.",
+            ]
+        )
         result = ContextPrecisionEval().evaluate(ctx, judge=judge)
         assert result.score.value == 0.0
         assert result.decision == EvalDecision.BLOCK
@@ -244,10 +262,12 @@ class TestContextPrecisionJudge:
 
 class TestContextPrecisionSerialization:
     def test_to_dict(self) -> None:
-        ctx = _ctx(context=[
-            "Corporate tax rate Germany is 15%.",
-            "Unrelated noise text here.",
-        ])
+        ctx = _ctx(
+            context=[
+                "Corporate tax rate Germany is 15%.",
+                "Unrelated noise text here.",
+            ]
+        )
         result = ContextPrecisionEval().evaluate(ctx)
         d = result.to_dict()
         assert "score" in d

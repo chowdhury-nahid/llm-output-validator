@@ -131,9 +131,7 @@ class FaithfulnessEval(BaseEval):
         )
 
     def _evaluate_with_judge(self, ctx: EvalContext, judge: LLMJudge) -> EvalResult:
-        raw_claims = judge.evaluate(
-            _DECOMPOSE_PROMPT.format(answer=ctx.answer)
-        )
+        raw_claims = judge.evaluate(_DECOMPOSE_PROMPT.format(answer=ctx.answer))
         claims = _parse_claims_from_llm(raw_claims)
         if not claims:
             return self._empty_result("Judge extracted no claims from answer")

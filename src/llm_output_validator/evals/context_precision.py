@@ -19,20 +19,118 @@ Reply with exactly one word: RELEVANT or IRRELEVANT."""
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
-_STOPWORDS = frozenset({
-    "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
-    "have", "has", "had", "do", "does", "did", "will", "would", "could",
-    "should", "may", "might", "shall", "can", "need", "to", "of", "in",
-    "for", "on", "with", "at", "by", "from", "as", "into", "through",
-    "during", "before", "after", "above", "below", "between", "out", "off",
-    "over", "under", "again", "then", "once", "here", "there", "when",
-    "where", "why", "how", "all", "each", "every", "both", "few", "more",
-    "most", "other", "some", "such", "no", "nor", "not", "only", "own",
-    "same", "so", "than", "too", "very", "just", "because", "but", "and",
-    "or", "if", "while", "about", "up", "it", "its", "this", "that",
-    "these", "those", "i", "me", "my", "we", "our", "you", "your", "he",
-    "him", "his", "she", "her", "they", "them", "what", "which", "who",
-})
+_STOPWORDS = frozenset(
+    {
+        "a",
+        "an",
+        "the",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "could",
+        "should",
+        "may",
+        "might",
+        "shall",
+        "can",
+        "need",
+        "to",
+        "of",
+        "in",
+        "for",
+        "on",
+        "with",
+        "at",
+        "by",
+        "from",
+        "as",
+        "into",
+        "through",
+        "during",
+        "before",
+        "after",
+        "above",
+        "below",
+        "between",
+        "out",
+        "off",
+        "over",
+        "under",
+        "again",
+        "then",
+        "once",
+        "here",
+        "there",
+        "when",
+        "where",
+        "why",
+        "how",
+        "all",
+        "each",
+        "every",
+        "both",
+        "few",
+        "more",
+        "most",
+        "other",
+        "some",
+        "such",
+        "no",
+        "nor",
+        "not",
+        "only",
+        "own",
+        "same",
+        "so",
+        "than",
+        "too",
+        "very",
+        "just",
+        "because",
+        "but",
+        "and",
+        "or",
+        "if",
+        "while",
+        "about",
+        "up",
+        "it",
+        "its",
+        "this",
+        "that",
+        "these",
+        "those",
+        "i",
+        "me",
+        "my",
+        "we",
+        "our",
+        "you",
+        "your",
+        "he",
+        "him",
+        "his",
+        "she",
+        "her",
+        "they",
+        "them",
+        "what",
+        "which",
+        "who",
+    }
+)
 
 
 def _tokenize(text: str) -> list[str]:
@@ -136,12 +234,14 @@ class ContextPrecisionEval(BaseEval):
             score = _relevance_score(ctx.question, item)
             is_relevant = score >= self._relevance_threshold
             relevance_flags.append(is_relevant)
-            judgments.append({
-                "index": i,
-                "context_preview": item[:80],
-                "relevance_score": round(score, 4),
-                "verdict": "relevant" if is_relevant else "irrelevant",
-            })
+            judgments.append(
+                {
+                    "index": i,
+                    "context_preview": item[:80],
+                    "relevance_score": round(score, 4),
+                    "verdict": "relevant" if is_relevant else "irrelevant",
+                }
+            )
 
         ap = _average_precision(relevance_flags)
         score = round(min(max(ap, 0.0), 1.0), 4)
@@ -176,17 +276,20 @@ class ContextPrecisionEval(BaseEval):
         for i, item in enumerate(ctx.context):
             raw = judge.evaluate(
                 _PRECISION_PROMPT.format(
-                    question=ctx.question, context_item=item,
+                    question=ctx.question,
+                    context_item=item,
                 )
             )
             cleaned = raw.strip().upper()
             is_relevant = "RELEVANT" in cleaned and "IRRELEVANT" not in cleaned
             relevance_flags.append(is_relevant)
-            judgments.append({
-                "index": i,
-                "context_preview": item[:80],
-                "verdict": "relevant" if is_relevant else "irrelevant",
-            })
+            judgments.append(
+                {
+                    "index": i,
+                    "context_preview": item[:80],
+                    "verdict": "relevant" if is_relevant else "irrelevant",
+                }
+            )
 
         ap = _average_precision(relevance_flags)
         score = round(min(max(ap, 0.0), 1.0), 4)
