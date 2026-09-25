@@ -51,7 +51,7 @@ class Profile(BaseModel):
     name: str = "custom"
 
     # Which of the 4 frozen v1 checks are enabled.
-    enable_json_schema: bool = True
+    enable_json_schema: bool = False  # off by default: most answers aren't JSON
     enable_injection: bool = True
     enable_pii: bool = True
     enable_content_rules: bool = False  # off by default: needs rules configured to be useful
@@ -72,7 +72,7 @@ def _minimal_profile() -> Profile:
     """The lightest useful profile: structural + safety checks only."""
     return Profile(
         name="minimal",
-        enable_json_schema=True,
+        enable_json_schema=False,
         enable_injection=True,
         enable_pii=True,
         enable_content_rules=False,

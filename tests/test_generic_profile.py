@@ -17,7 +17,11 @@ def test_list_preset_names_returns_minimal_and_rag() -> None:
 
 def test_minimal_preset_has_no_evals_enabled() -> None:
     profile = get_preset("minimal")
-    assert profile.enable_json_schema is True
+    # json_schema is opt-in, not on by default: most answers are plain
+    # text, not JSON, and this was a real bug caught by the runner tests
+    # (a clean plain-text answer was blocked because "minimal" used to
+    # enable json_schema unconditionally).
+    assert profile.enable_json_schema is False
     assert profile.enable_injection is True
     assert profile.enable_pii is True
     assert profile.enable_faithfulness is False
