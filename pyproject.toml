@@ -37,14 +37,20 @@ Issues = "https://github.com/chowdhury-nahid/llm-output-validator/issues"
 
 [project.scripts]
 llm-validate = "llm_output_validator.cli:main"
+llm-validate-mcp = "llm_output_validator.server:main"
 
 [project.optional-dependencies]
+mcp = [
+    "mcp>=1.10,<2",
+]
 dev = [
     "pytest>=8.2",
     "pytest-cov>=5.0",
     "ruff>=0.4",
     "mypy>=1.10",
     "hypothesis>=6.100",
+    "anyio>=4.0",
+    "mcp>=1.10,<2",
 ]
 
 [tool.hatch.build.targets.wheel]
