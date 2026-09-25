@@ -123,7 +123,7 @@ class TestHallucinationLexical:
     def test_well_grounded_answer(self) -> None:
         ctx = _ctx(
             answer="The corporate tax rate in Germany is 15% at the federal level. "
-                   "A solidarity surcharge of 5.5% also applies.",
+            "A solidarity surcharge of 5.5% also applies.",
             context=[
                 "The corporate income tax rate in Germany is 15% at the federal level. "
                 "A solidarity surcharge of 5.5% is levied on top of the corporate tax."
@@ -137,7 +137,7 @@ class TestHallucinationLexical:
     def test_fabricated_facts(self) -> None:
         ctx = _ctx(
             answer="The corporate tax rate in Jupiter is 99%. "
-                   "Mars charges a flat 50% on all interplanetary trade.",
+            "Mars charges a flat 50% on all interplanetary trade.",
             context=["The corporate tax rate in Germany is 15%."],
         )
         result = HallucinationEval().evaluate(ctx)
@@ -186,10 +186,8 @@ class TestHallucinationLexical:
     def test_mixed_grounding(self) -> None:
         ctx = _ctx(
             answer="The corporate tax rate in Germany is 15%. "
-                   "Unicorns pay a special levy of 200% on magical goods.",
-            context=[
-                "The corporate income tax rate in Germany is 15% at the federal level."
-            ],
+            "Unicorns pay a special levy of 200% on magical goods.",
+            context=["The corporate income tax rate in Germany is 15% at the federal level."],
         )
         result = HallucinationEval().evaluate(ctx)
         grounded = sum(1 for c in result.claims if c["verdict"] == "grounded")
@@ -203,12 +201,14 @@ class TestHallucinationLexical:
 
 class TestHallucinationJudge:
     def test_no_hallucination(self) -> None:
-        response = json.dumps({
-            "statements": [
-                {"text": "Rate is 15%.", "verdict": "GROUNDED", "reason": "Matches context."}
-            ],
-            "hallucination_rate": 0.0,
-        })
+        response = json.dumps(
+            {
+                "statements": [
+                    {"text": "Rate is 15%.", "verdict": "GROUNDED", "reason": "Matches context."}
+                ],
+                "hallucination_rate": 0.0,
+            }
+        )
         judge = StubJudge(response)
         ctx = _ctx(
             answer="Rate is 15%.",
@@ -220,12 +220,18 @@ class TestHallucinationJudge:
         assert result.detail["strategy"] == "llm_judge"
 
     def test_full_hallucination(self) -> None:
-        response = json.dumps({
-            "statements": [
-                {"text": "Made up fact.", "verdict": "HALLUCINATED", "reason": "Not in context."}
-            ],
-            "hallucination_rate": 1.0,
-        })
+        response = json.dumps(
+            {
+                "statements": [
+                    {
+                        "text": "Made up fact.",
+                        "verdict": "HALLUCINATED",
+                        "reason": "Not in context.",
+                    }
+                ],
+                "hallucination_rate": 1.0,
+            }
+        )
         judge = StubJudge(response)
         ctx = _ctx(
             answer="Made up fact.",
@@ -236,13 +242,15 @@ class TestHallucinationJudge:
         assert result.decision == EvalDecision.BLOCK
 
     def test_partial_hallucination(self) -> None:
-        response = json.dumps({
-            "statements": [
-                {"text": "Rate is 15%.", "verdict": "GROUNDED", "reason": "OK."},
-                {"text": "Enacted in 2099.", "verdict": "HALLUCINATED", "reason": "Wrong."},
-            ],
-            "hallucination_rate": 0.5,
-        })
+        response = json.dumps(
+            {
+                "statements": [
+                    {"text": "Rate is 15%.", "verdict": "GROUNDED", "reason": "OK."},
+                    {"text": "Enacted in 2099.", "verdict": "HALLUCINATED", "reason": "Wrong."},
+                ],
+                "hallucination_rate": 0.5,
+            }
+        )
         judge = StubJudge(response)
         ctx = _ctx(
             answer="Rate is 15%. Enacted in 2099.",

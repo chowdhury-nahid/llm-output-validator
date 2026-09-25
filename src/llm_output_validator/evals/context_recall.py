@@ -20,20 +20,118 @@ _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
-_STOPWORDS = frozenset({
-    "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
-    "have", "has", "had", "do", "does", "did", "will", "would", "could",
-    "should", "may", "might", "shall", "can", "need", "to", "of", "in",
-    "for", "on", "with", "at", "by", "from", "as", "into", "through",
-    "during", "before", "after", "above", "below", "between", "out", "off",
-    "over", "under", "again", "then", "once", "here", "there", "when",
-    "where", "why", "how", "all", "each", "every", "both", "few", "more",
-    "most", "other", "some", "such", "no", "nor", "not", "only", "own",
-    "same", "so", "than", "too", "very", "just", "because", "but", "and",
-    "or", "if", "while", "about", "up", "it", "its", "this", "that",
-    "these", "those", "i", "me", "my", "we", "our", "you", "your", "he",
-    "him", "his", "she", "her", "they", "them", "what", "which", "who",
-})
+_STOPWORDS = frozenset(
+    {
+        "a",
+        "an",
+        "the",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "could",
+        "should",
+        "may",
+        "might",
+        "shall",
+        "can",
+        "need",
+        "to",
+        "of",
+        "in",
+        "for",
+        "on",
+        "with",
+        "at",
+        "by",
+        "from",
+        "as",
+        "into",
+        "through",
+        "during",
+        "before",
+        "after",
+        "above",
+        "below",
+        "between",
+        "out",
+        "off",
+        "over",
+        "under",
+        "again",
+        "then",
+        "once",
+        "here",
+        "there",
+        "when",
+        "where",
+        "why",
+        "how",
+        "all",
+        "each",
+        "every",
+        "both",
+        "few",
+        "more",
+        "most",
+        "other",
+        "some",
+        "such",
+        "no",
+        "nor",
+        "not",
+        "only",
+        "own",
+        "same",
+        "so",
+        "than",
+        "too",
+        "very",
+        "just",
+        "because",
+        "but",
+        "and",
+        "or",
+        "if",
+        "while",
+        "about",
+        "up",
+        "it",
+        "its",
+        "this",
+        "that",
+        "these",
+        "those",
+        "i",
+        "me",
+        "my",
+        "we",
+        "our",
+        "you",
+        "your",
+        "he",
+        "him",
+        "his",
+        "she",
+        "her",
+        "they",
+        "them",
+        "what",
+        "which",
+        "who",
+    }
+)
 
 
 def _decompose_answer(text: str) -> list[str]:
@@ -114,11 +212,13 @@ class ContextRecallEval(BaseEval):
         for claim in claims:
             overlap = _lexical_attribution(claim, combined_context)
             attributed = overlap >= self._attribution_threshold
-            attributions.append({
-                "claim": claim,
-                "verdict": "attributable" if attributed else "not_attributable",
-                "overlap_score": round(overlap, 4),
-            })
+            attributions.append(
+                {
+                    "claim": claim,
+                    "verdict": "attributable" if attributed else "not_attributable",
+                    "overlap_score": round(overlap, 4),
+                }
+            )
 
         score = self._compute_score(attributions)
         decision = self.threshold.decide(score)
@@ -132,9 +232,7 @@ class ContextRecallEval(BaseEval):
             detail={
                 "strategy": "lexical",
                 "claim_count": len(claims),
-                "attributed_count": sum(
-                    1 for a in attributions if a["verdict"] == "attributable"
-                ),
+                "attributed_count": sum(1 for a in attributions if a["verdict"] == "attributable"),
             },
         )
 
@@ -149,9 +247,7 @@ class ContextRecallEval(BaseEval):
 
         attributions = []
         for claim in claims:
-            raw = judge.evaluate(
-                _ATTRIBUTION_PROMPT.format(context=combined_context, claim=claim)
-            )
+            raw = judge.evaluate(_ATTRIBUTION_PROMPT.format(context=combined_context, claim=claim))
             verdict = self._parse_verdict(raw)
             attributions.append({"claim": claim, "verdict": verdict})
 
@@ -167,9 +263,7 @@ class ContextRecallEval(BaseEval):
             detail={
                 "strategy": "llm_judge",
                 "claim_count": len(claims),
-                "attributed_count": sum(
-                    1 for a in attributions if a["verdict"] == "attributable"
-                ),
+                "attributed_count": sum(1 for a in attributions if a["verdict"] == "attributable"),
             },
         )
 
@@ -190,10 +284,7 @@ class ContextRecallEval(BaseEval):
     def _build_reasoning(self, attributions: Sequence[dict], strategy: str) -> str:
         total = len(attributions)
         attributed = sum(1 for a in attributions if a["verdict"] == "attributable")
-        return (
-            f"{attributed}/{total} answer claims attributable to context "
-            f"(strategy: {strategy})"
-        )
+        return f"{attributed}/{total} answer claims attributable to context (strategy: {strategy})"
 
     def _empty_result(self, reason: str) -> EvalResult:
         return EvalResult(

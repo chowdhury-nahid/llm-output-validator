@@ -30,22 +30,71 @@ Return ONLY a JSON object:
 _ENTITY_RE = re.compile(
     r"(?:"
     r"\d{1,2}[./]\d{1,2}[./]\d{2,4}"  # dates
-    r"|\d+\.?\d*\s*%"                  # percentages
-    r"|[$€£][\d,]+(?:\.\d+)?"         # currency amounts
-    r"|\b\d+(?:\.\d+)?\b"             # plain numbers
+    r"|\d+\.?\d*\s*%"  # percentages
+    r"|[$€£][\d,]+(?:\.\d+)?"  # currency amounts
+    r"|\b\d+(?:\.\d+)?\b"  # plain numbers
     r")"
 )
 
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
 
-_STOPWORDS = frozenset({
-    "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
-    "have", "has", "had", "do", "does", "did", "will", "would", "could",
-    "should", "may", "might", "shall", "can", "to", "of", "in", "for",
-    "on", "with", "at", "by", "from", "as", "into", "through", "and",
-    "or", "but", "not", "no", "if", "so", "than", "too", "very", "just",
-    "it", "its", "this", "that", "these", "those",
-})
+_STOPWORDS = frozenset(
+    {
+        "a",
+        "an",
+        "the",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "could",
+        "should",
+        "may",
+        "might",
+        "shall",
+        "can",
+        "to",
+        "of",
+        "in",
+        "for",
+        "on",
+        "with",
+        "at",
+        "by",
+        "from",
+        "as",
+        "into",
+        "through",
+        "and",
+        "or",
+        "but",
+        "not",
+        "no",
+        "if",
+        "so",
+        "than",
+        "too",
+        "very",
+        "just",
+        "it",
+        "its",
+        "this",
+        "that",
+        "these",
+        "those",
+    }
+)
 
 
 def _extract_entities(text: str) -> set[str]:
@@ -151,27 +200,23 @@ class HallucinationEval(BaseEval):
         for sentence in sentences:
             grounding = _sentence_grounding_score(sentence, combined_context)
             verdict = "grounded" if grounding >= self._grounding_cutoff else "hallucinated"
-            statement_results.append({
-                "text": sentence,
-                "verdict": verdict,
-                "grounding_score": round(grounding, 3),
-            })
+            statement_results.append(
+                {
+                    "text": sentence,
+                    "verdict": verdict,
+                    "grounding_score": round(grounding, 3),
+                }
+            )
 
         grounded_ents, ungrounded_ents = _entity_grounding(ctx.answer, combined_context)
         total_entities = len(grounded_ents) + len(ungrounded_ents)
-        entity_score = (
-            len(grounded_ents) / total_entities if total_entities > 0 else 1.0
+        entity_score = len(grounded_ents) / total_entities if total_entities > 0 else 1.0
+
+        sentence_score = sum(1 for s in statement_results if s["verdict"] == "grounded") / len(
+            statement_results
         )
 
-        sentence_score = (
-            sum(1 for s in statement_results if s["verdict"] == "grounded")
-            / len(statement_results)
-        )
-
-        raw_score = (
-            self._sentence_weight * sentence_score
-            + self._entity_weight * entity_score
-        )
+        raw_score = self._sentence_weight * sentence_score + self._entity_weight * entity_score
         score = round(min(max(raw_score, 0.0), 1.0), 4)
         decision = self.threshold.decide(score)
 
@@ -197,9 +242,7 @@ class HallucinationEval(BaseEval):
         if not combined_context.strip():
             return self._no_context_result(ctx.answer)
 
-        raw = judge.evaluate(
-            _DETECT_PROMPT.format(context=combined_context, answer=ctx.answer)
-        )
+        raw = judge.evaluate(_DETECT_PROMPT.format(context=combined_context, answer=ctx.answer))
         statements, hallucination_rate = self._parse_judge_response(raw)
         score = round(1.0 - hallucination_rate, 4)
         decision = self.threshold.decide(score)
@@ -218,9 +261,7 @@ class HallucinationEval(BaseEval):
             },
         )
 
-    def _parse_judge_response(
-        self, raw: str
-    ) -> tuple[list[dict], float]:
+    def _parse_judge_response(self, raw: str) -> tuple[list[dict], float]:
         try:
             parsed = json.loads(raw)
             statements = parsed.get("statements", [])
@@ -247,10 +288,7 @@ class HallucinationEval(BaseEval):
         if not statements:
             return "No statements analyzed by judge"
         total = len(statements)
-        hallu = sum(
-            1 for s in statements
-            if str(s.get("verdict", "")).upper() == "HALLUCINATED"
-        )
+        hallu = sum(1 for s in statements if str(s.get("verdict", "")).upper() == "HALLUCINATED")
         return f"{hallu}/{total} statements classified as hallucinated (strategy: llm_judge)"
 
     def _no_context_result(self, answer: str) -> EvalResult:

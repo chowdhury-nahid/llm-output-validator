@@ -87,8 +87,10 @@ class TestFaithfulnessLexical:
     def test_fully_grounded_answer(self) -> None:
         ctx = _ctx(
             answer="The corporate tax rate in Germany is 15%. It applies to all corporations.",
-            context=["The corporate tax rate in Germany is 15% at the federal level. "
-                      "It applies to all corporations registered in Germany."],
+            context=[
+                "The corporate tax rate in Germany is 15% at the federal level. "
+                "It applies to all corporations registered in Germany."
+            ],
         )
         result = FaithfulnessEval().evaluate(ctx)
         assert result.score.value > 0.5
@@ -153,11 +155,13 @@ class TestFaithfulnessLexical:
 
 class TestFaithfulnessJudge:
     def test_all_supported(self) -> None:
-        judge = StubJudge([
-            '["The rate is 15%.", "It applies to corporations."]',
-            "SUPPORTED",
-            "SUPPORTED",
-        ])
+        judge = StubJudge(
+            [
+                '["The rate is 15%.", "It applies to corporations."]',
+                "SUPPORTED",
+                "SUPPORTED",
+            ]
+        )
         ctx = _ctx(
             answer="The rate is 15%. It applies to corporations.",
             context=["The corporate rate is 15% for all corporations."],
@@ -168,11 +172,13 @@ class TestFaithfulnessJudge:
         assert result.detail["strategy"] == "llm_judge"
 
     def test_one_contradicted(self) -> None:
-        judge = StubJudge([
-            '["The rate is 15%.", "It was enacted in 2024."]',
-            "SUPPORTED",
-            "CONTRADICTED",
-        ])
+        judge = StubJudge(
+            [
+                '["The rate is 15%.", "It was enacted in 2024."]',
+                "SUPPORTED",
+                "CONTRADICTED",
+            ]
+        )
         ctx = _ctx(
             answer="The rate is 15%. It was enacted in 2024.",
             context=["The rate is 15%, enacted in 2019."],
@@ -182,11 +188,13 @@ class TestFaithfulnessJudge:
         assert result.decision == EvalDecision.FLAG
 
     def test_all_unsupported(self) -> None:
-        judge = StubJudge([
-            '["Claim A.", "Claim B."]',
-            "NOT_MENTIONED",
-            "NOT_MENTIONED",
-        ])
+        judge = StubJudge(
+            [
+                '["Claim A.", "Claim B."]',
+                "NOT_MENTIONED",
+                "NOT_MENTIONED",
+            ]
+        )
         ctx = _ctx(
             answer="Claim A. Claim B.",
             context=["Unrelated context."],

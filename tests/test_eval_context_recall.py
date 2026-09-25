@@ -108,8 +108,7 @@ class TestContextRecallLexical:
     def test_fully_attributable(self) -> None:
         ctx = _ctx(
             answer=(
-                "The corporate tax rate in Germany is 15%. "
-                "A solidarity surcharge of 5.5% applies."
+                "The corporate tax rate in Germany is 15%. A solidarity surcharge of 5.5% applies."
             ),
             context=[
                 "The corporate tax rate in Germany is 15% at the federal level. "

@@ -86,11 +86,7 @@ class TestPipelineConstruction:
         assert result is pipeline
 
     def test_chained_construction(self) -> None:
-        pipeline = (
-            EvalPipeline()
-            .add(AlwaysPassEval())
-            .add(AlwaysFlagEval())
-        )
+        pipeline = EvalPipeline().add(AlwaysPassEval()).add(AlwaysFlagEval())
         report = pipeline.run(_ctx())
         assert len(report.results) == 2
 
@@ -178,11 +174,13 @@ class TestFailFast:
 
 class TestRealEvalComposition:
     def test_full_pipeline_grounded_answer(self) -> None:
-        pipeline = EvalPipeline([
-            FaithfulnessEval(),
-            AnswerRelevancyEval(),
-            HallucinationEval(),
-        ])
+        pipeline = EvalPipeline(
+            [
+                FaithfulnessEval(),
+                AnswerRelevancyEval(),
+                HallucinationEval(),
+            ]
+        )
         ctx = _ctx(
             question="What is the corporate tax rate in Germany?",
             answer="The corporate tax rate in Germany is 15% at the federal level.",
@@ -198,11 +196,13 @@ class TestRealEvalComposition:
             assert r.score.value > 0.3
 
     def test_full_pipeline_hallucinated_answer(self) -> None:
-        pipeline = EvalPipeline([
-            FaithfulnessEval(),
-            AnswerRelevancyEval(),
-            HallucinationEval(),
-        ])
+        pipeline = EvalPipeline(
+            [
+                FaithfulnessEval(),
+                AnswerRelevancyEval(),
+                HallucinationEval(),
+            ]
+        )
         ctx = _ctx(
             question="What is the corporate tax rate in Germany?",
             answer="Quantum tunneling enables faster photon decay in nebulae.",
@@ -213,10 +213,12 @@ class TestRealEvalComposition:
 
     def test_pipeline_with_custom_thresholds(self) -> None:
         strict = ThresholdConfig(pass_above=0.95, block_below=0.5)
-        pipeline = EvalPipeline([
-            FaithfulnessEval(threshold=strict),
-            HallucinationEval(threshold=strict),
-        ])
+        pipeline = EvalPipeline(
+            [
+                FaithfulnessEval(threshold=strict),
+                HallucinationEval(threshold=strict),
+            ]
+        )
         ctx = _ctx(
             question="What is the rate?",
             answer="The rate is 15%.",
